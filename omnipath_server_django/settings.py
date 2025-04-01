@@ -91,12 +91,20 @@ DATABASES = {
     # }
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "omnipath",
-        "USER": "omnipath",
+        "NAME": "django_metadata_db",
+        "USER": "postgres",
+        "PASSWORD": "postgres",  # TODO: change this for production
+        "HOST": "localhost",
+        "PORT": "5432",
+    },
+    "omnipath_data": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "omnipath_db_sandbox",
+        "USER": "omnipathuser",
         "PASSWORD": "omnipath123",
-        "HOST": "127.0.0.1",
-        "PORT": 5432,
-    }
+        "HOST": "localhost",
+        "PORT": "5432",
+    },
     # --------------------------
     # --   SQLite Settings    --
     # --------------------------
@@ -106,6 +114,8 @@ DATABASES = {
     # }
 }
 
+# Register the database router
+DATABASE_ROUTERS = ["omnipath_server_django.db_router.MyDatabaseRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

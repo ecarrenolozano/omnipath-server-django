@@ -1,7 +1,7 @@
 -- ------------------------------------------------------------
 -- ------      POSTGRESQL INITIAL SETUP for OMNIPATH      -----
 -- ------------------------------------------------------------
--- Authors: 
+-- Authors:
 --	Omnipath Team
 --	Scientific Software Center
 -- Last update: 10.03.2025
@@ -17,7 +17,7 @@
 CREATE DATABASE omnipath_db;
 
 -- Step 2. Create an admin role (group) WITHOUT privileges
---      Privileges: 
+--      Privileges:
 --          - login or connection
 --          - database access
 --          - object ownership or permissions
