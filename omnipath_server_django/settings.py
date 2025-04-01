@@ -78,14 +78,22 @@ WSGI_APPLICATION = "omnipath_server_django.wsgi.application"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    # ---------------------------
-    # --  PostgreSQL Settings  --
-    # ---------------------------
+    # -----------------------------------------------
+    # --  PostgreSQL Settings  (original omnipath) --
+    # -----------------------------------------------
+    # "default": {
+    #     "ENGINE": "django.db.backends.postgresql",
+    #     "NAME": "omnipath_db",
+    #     "USER": "postgres",
+    #     "PASSWORD": "omnipath_admin_123",
+    #     "HOST": "127.0.0.1",
+    #     "PORT": 5432,
+    # }
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "omnipath_db",
-        "USER": "postgres",
-        "PASSWORD": "omnipath_admin_123",
+        "NAME": "omnipath",
+        "USER": "omnipath",
+        "PASSWORD": "omnipath123",
         "HOST": "127.0.0.1",
         "PORT": 5432,
     }

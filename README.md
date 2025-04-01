@@ -279,3 +279,56 @@ class InteractionsOmnipath(models.Model):
 
 ```
 
+### Creating the Serializer file
+1. Create a file in `/api/serializers.py`. This file will serve to create encoding and decoding classes.
+```python
+from rest_framework import serializers
+from api.models import InteractionsOmnipath
+
+class InteractionsOmnipathSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = InteractionsOmnipath
+        fields = ("id", "source", "target")  # Just two fields for this example
+```
+
+### Create a superuser account for Django
+1. Run the following command
+```bash
+poetry run python manage.py createsuperuser
+```
+Fields
+- Username: django_admin
+- Password: omnipath_admin_123
+- Email address: edwin1892@gmail.com
+
+### Mapping Views to URLS
+1. in `omnipath_server_django/urls.py`
+```python
+from django.urls import re_path
+from . import views
+
+urlpatterns = [
+    re_path(r"^api/interactions$", views.interactions_list),
+    re_path(r"^api/interactions/(?P<pk>[0-9]+)$", views.interaction_detail),
+]
+```
+2. In `api/urls.py`
+```python
+from django.contrib import admin
+from django.urls import path
+from django.urls import include
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", include("api.urls")),
+]
+```
+
+### Register model with admin site
+1. In `api/admin.py` inser the following
+```python
+from django.contrib import admin
+from .models import In
+
+```
