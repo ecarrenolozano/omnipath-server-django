@@ -1,2 +1,2 @@
-./omnipath_server_log
-./pypath_log
+./omnipath_server_log/*
+./pypath_log/*
