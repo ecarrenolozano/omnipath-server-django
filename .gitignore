@@ -2,5 +2,6 @@ omnipath_server_log/*
 pypath_log/*
 
 # Cache folders
-__pycache__/
+omnipath_server/__pycache__/*
+omnipath_server_django/__pycache__/*
 **/__pycache__/
