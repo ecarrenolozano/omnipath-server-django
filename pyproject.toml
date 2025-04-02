@@ -16,6 +16,7 @@ toml = "^0.10.2"
 pypath-common = "^0.2.5"
 sqlalchemy = "^2.0.40"
 psycopg2-binary = "^2.9.10"
+drf-yasg = {extras = ["validation"], version = "^1.21.10"}
 
 
 [build-system]
