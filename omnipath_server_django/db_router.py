@@ -1,4 +1,4 @@
-class MyDatabaseRouter:
+class DatabaseRouter:
     """
     Routes:
     - Django internal tables -> 'default' (django_metadata_db)

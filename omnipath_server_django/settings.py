@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    "drf_yasg",
     "rest_framework",
     "corsheaders",
+    # ---- from here list of apps built by the user
     "api",
 ]
 
@@ -83,9 +85,9 @@ DATABASES = {
     # -----------------------------------------------
     # "default": {
     #     "ENGINE": "django.db.backends.postgresql",
-    #     "NAME": "omnipath_db",
-    #     "USER": "postgres",
-    #     "PASSWORD": "omnipath_admin_123",
+    #     "NAME": "omnipath",
+    #     "USER": "omnipath",
+    #     "PASSWORD": "omnipath123",
     #     "HOST": "127.0.0.1",
     #     "PORT": 5432,
     # }
@@ -105,17 +107,10 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": "5432",
     },
-    # --------------------------
-    # --   SQLite Settings    --
-    # --------------------------
-    # "default": {
-    # "ENGINE": "django.db.backends.sqlite3",
-    # "NAME": BASE_DIR / "db.sqlite3",
-    # }
 }
 
 # Register the database router
-DATABASE_ROUTERS = ["omnipath_server_django.db_router.MyDatabaseRouter"]
+DATABASE_ROUTERS = ["omnipath_server_django.db_router.DatabaseRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
