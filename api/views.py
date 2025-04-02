@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 from django.http.response import JsonResponse
 from django.http import StreamingHttpResponse
@@ -7,42 +9,125 @@ from rest_framework import status
 from api.models import Interactions
 from api.serializers import InteractionsOmnipathSerializer
 from rest_framework.decorators import api_view
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
-# Create your views here.
+# ----------------------------------------------------------------
+# -------------------   INTERACTIONS  HANDLERS   -----------------
+# ----------------------------------------------------------------
+@swagger_auto_schema(
+    method="get",
+    operation_description="Retrieve a list of interactions. Supports filtering by source.",
+    manual_parameters=[
+        openapi.Parameter(
+            "source",
+            openapi.IN_QUERY,
+            description="Filter interactions by source",
+            type=openapi.TYPE_STRING,
+        ),
+        openapi.Parameter(
+            "fields",
+            openapi.IN_QUERY,
+            description="Comma-separated list of fields to return",
+            type=openapi.TYPE_STRING,
+        ),
+    ],
+    responses={200: InteractionsOmnipathSerializer(many=True)},
+)
+@swagger_auto_schema(
+    method="post",
+    operation_description="Create a new interaction",
+    request_body=InteractionsOmnipathSerializer,
+    responses={201: InteractionsOmnipathSerializer, 400: "Bad Request"},
+)
 @api_view(["GET", "POST"])
-def interactions_list(request):
-    if request.method == "GET":
-        interactions = Interactions.objects.all()  # Retrieve all objects
+def list_or_create_interactions(request):
+    """
+    Handles retrieving interactions dynamically based on query parameters (GET)
+    or creating a new interaction (POST).
+    """
 
-        source = request.GET.get("source", None)
-        if source is not None:
-            interactions = interactions.filter(source__icontains=source)
+    if request.method == "POST":
+        return create_interaction(request)
 
-        interactions = interactions[:20]  #### Just for TESTING
+    return get_interactions(request)
 
-        # serializing data before response
-        interactions_omnipath_serializer = InteractionsOmnipathSerializer(
-            interactions, many=True
+
+def get_interactions(request):
+    """Handles GET request for retrieving interactions with optional filtering and field selection."""
+    queryset = Interactions.objects.all()
+
+    # Apply filtering by source if provided
+    source_filter = request.query_params.get("source")
+    if source_filter:
+        queryset = queryset.filter(source__icontains=source_filter)
+
+    # Get selected fields from query parameters
+    selected_fields = request.query_params.get("fields")
+    selected_fields = selected_fields.split(",") if selected_fields else None
+
+    serializer = InteractionsOmnipathSerializer(
+        queryset, many=True, fields=selected_fields
+    )
+    return JsonResponse(serializer.data, safe=False)
+
+
+def create_interaction(request):
+    """Handles POST request for creating a new interaction."""
+    interaction_data = JSONParser().parse(request)
+    serializer = InteractionsOmnipathSerializer(data=interaction_data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ----------------------------------------------------------------------------------
+@swagger_auto_schema(
+    method="get",
+    operation_description="Retrieve a specific interaction by its ID.",
+    responses={
+        200: InteractionsOmnipathSerializer,
+        404: "Not Found - Interaction does not exist",
+    },
+    manual_parameters=[
+        openapi.Parameter(
+            "pk",
+            openapi.IN_PATH,
+            description="ID of the interaction",
+            type=openapi.TYPE_INTEGER,
         )
-        return JsonResponse(interactions_omnipath_serializer.data, safe=False)
-        # 'safe=False' for objects serialization
-
-    elif request.method == "POST":
-        interaction_data = JSONParser().parse(request)
-        interactions_omnipath_serializer = InteractionsOmnipathSerializer(
-            data=interaction_data
+    ],
+)
+@swagger_auto_schema(
+    method="delete",
+    operation_description="Delete a specific interaction by its ID.",
+    responses={
+        204: "No Content - Successfully deleted",
+        404: "Not Found - Interaction does not exist",
+    },
+    manual_parameters=[
+        openapi.Parameter(
+            "pk",
+            openapi.IN_PATH,
+            description="ID of the interaction",
+            type=openapi.TYPE_INTEGER,
         )
-        if interactions_omnipath_serializer.is_valid():
-            interactions_omnipath_serializer.save()
-            return JsonResponse(
-                interactions_omnipath_serializer.data, status=status.HTTP_201_CREATED
-            )
-        return JsonResponse(
-            interactions_omnipath_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-        )
-
-
+    ],
+)
+@swagger_auto_schema(
+    method="put",
+    operation_description="Update a specific interaction by its ID.",
+    request_body=InteractionsOmnipathSerializer,
+    responses={
+        200: InteractionsOmnipathSerializer,
+        400: "Bad Request - Invalid data",
+        404: "Not Found - Interaction does not exist",
+    },
+)
 @api_view(["GET", "PUT", "DELETE"])
 def interaction_detail(request, pk):
     try:
@@ -75,35 +160,3 @@ def interaction_detail(request, pk):
             {"message": "Country was deleted successfully!"},
             status=status.HTTP_204_NO_CONTENT,
         )
-
-
-@api_view(["GET"])
-def stream_interactions(request):
-    """
-    Streams the interactions data in JSON format instead of returning it all at once.
-    This helps with large datasets.
-    """
-    source = request.GET.get("source", None)
-
-    def data_generator():
-        yield "["  # Start of JSON array
-        first = True
-        queryset = Interactions.objects.all()
-
-        if source is not None:
-            queryset = queryset.filter(source__icontains=source)
-
-        for (
-            obj
-        ) in queryset.iterator():  # Uses an efficient iterator to fetch data in chunks
-            if not first:
-                yield ","
-            first = False
-            serialized_obj = InteractionsOmnipathSerializer(obj).data
-            yield json.dumps(serialized_obj, cls=DjangoJSONEncoder)
-
-        yield "]"  # End of JSON array
-
-    response = StreamingHttpResponse(data_generator(), content_type="application/json")
-    response["Content-Disposition"] = 'attachment; filename="interactions.json"'
-    return response

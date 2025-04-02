@@ -3,45 +3,16 @@ from api.models import Interactions
 
 
 class InteractionsOmnipathSerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        fields = kwargs.pop("fields", None)
+        super().__init__(*args, **kwargs)
+
+        if fields is not None:
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
 
     class Meta:
         model = Interactions
-        fields = (
-            "id",
-            "source",
-            "target",
-            "source_genesymbol",
-            "target_genesymbol",
-            "is_directed",
-            "is_stimulation",
-            "is_inhibition",
-            "consensus_direction",
-            "consensus_stimulation",
-            "consensus_inhibition",
-            "sources",
-            "references",
-            "omnipath",
-            "kinaseextra",
-            "ligrecextra",
-            "pathwayextra",
-            "mirnatarget",
-            "dorothea",
-            "collectri",
-            "tf_target",
-            "lncrna_mrna",
-            "tf_mirna",
-            "small_molecule",
-            "dorothea_curated",
-            "dorothea_chipseq",
-            "dorothea_tfbs",
-            "dorothea_coexp",
-            "dorothea_level",
-            "type",
-            "curation_effort",
-            "extra_attrs",
-            "evidences",
-            "ncbi_tax_id_source",
-            "entity_type_source",
-            "ncbi_tax_id_target",
-            "entity_type_target",
-        )  # Here we define the field to return in the response
+        fields = "__all__"
