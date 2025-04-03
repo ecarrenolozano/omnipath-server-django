@@ -21,12 +21,12 @@ from omnipath_server import _log
 from omnipath_server.service import LegacyService
 
 __all__ = [
-    "create_server",
+    'create_server',
 ]
 
 
 def create_server(**kwargs) -> Sanic:
-    """
+    '''
     Creates and sets up the legacy database server (implemented in Sanic).
 
     Args:
@@ -34,18 +34,18 @@ def create_server(**kwargs) -> Sanic:
 
     Returns:
         Instance of the server.
-    """
+    '''
 
-    _log("Creating new legacy server...")
-    legacy_server = Sanic("LegacyServer")
+    _log('Creating new legacy server...')
+    legacy_server = Sanic('LegacyServer')
     legacy_server.ctx.service = LegacyService(kwargs)
 
     async def stream(
-        request: Request,
-        lines: Generator,
-        json_format: bool,
+            request: Request,
+            lines: Generator,
+            json_format: bool,
     ) -> None:
-        """
+        '''
         Streams the response from the server from a given request.
 
         Args:
@@ -56,13 +56,15 @@ def create_server(**kwargs) -> Sanic:
             json_format:
                 Whether to respond in JSON format or not (if not JSON, defaults
                 to TSV).
-        """
+        '''
 
         content_type = (
-            "application/json" if json_format else "text/tab-separated-values"
+            'application/json'
+                if json_format else
+            'text/tab-separated-values'
         )
 
-        _response = await request.respond(content_type=content_type)
+        _response = await request.respond(content_type = content_type)
 
         for line in lines:
 
@@ -70,9 +72,10 @@ def create_server(**kwargs) -> Sanic:
 
         await _response.eof()
 
-    @legacy_server.route("/<path:path>")
+
+    @legacy_server.route('/<path:path>')
     async def legacy_handler(request: Request, path: str):
-        """
+        '''
         Request handler
 
         Args:
@@ -84,30 +87,29 @@ def create_server(**kwargs) -> Sanic:
 
         Returns:
             Server response as text.
-        """
+        '''
 
         if (
-            not path.startswith("_")
-            and
+            not path.startswith('_') and
             # TODO: maintain a registry of endpoints,
             # don't rely on this getattr
             (endpoint := getattr(legacy_server.ctx.service, path, None))
         ):
 
-            json_format = request.args.get("format", "tsv") == "json"
+            json_format = request.args.get('format', 'tsv') == 'json'
 
-            precontent = ("[\n",) if json_format else ()
-            postcontent = ("]",) if json_format else ()
+            precontent = ('[\n',) if json_format else ()
+            postcontent = (']',) if json_format else ()
             postformat = (
-                (lambda x, last: f"{x}\n" if last else f"{x},\n")
-                if json_format
-                else (lambda x, last: x[:-1] if last else x)
+                (lambda x, last: f'{x}\n' if last else f'{x},\n')
+                    if json_format else
+                (lambda x, last: x[:-1] if last else x)
             )
 
             lines = endpoint(
-                postformat=postformat,
-                precontent=precontent,
-                postcontent=postcontent,
+                postformat = postformat,
+                precontent = precontent,
+                postcontent = postcontent,
                 **request.args,
             )
 
@@ -115,8 +117,8 @@ def create_server(**kwargs) -> Sanic:
 
         else:
 
-            return response.text(f"No such path: {path}", status=404)
+            return response.text(f'No such path: {path}', status = 404)
 
-    _log("Legacy server ready.")
+    _log('Legacy server ready.')
 
     return legacy_server

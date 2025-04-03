@@ -18,8 +18,8 @@ OmniPath HTTP server based on Twisted
 """
 
 __all__ = [
-    "__version__",
-    "__author__",
+    '__version__',
+    '__author__',
 ]
 
 from ._metadata import __author__, __version__

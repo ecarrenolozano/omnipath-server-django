@@ -18,24 +18,23 @@ from sqlalchemy.orm import declarative_base
 from sqlalchemy.dialects.postgresql import JSONB
 
 __all__ = [
-    "Annotations",
-    "Base",
-    "Complexes",
-    "Enzsub",
-    "Interactions",
-    "Intercell",
+    'Annotations',
+    'Base',
+    'Complexes',
+    'Enzsub',
+    'Interactions',
+    'Intercell',
 ]
 
 Base = declarative_base()
 
-
 class Annotations(Base):
-    """
+    '''
     Definition for the `annotations` table columns and types.
-    """
+    '''
 
-    __tablename__ = "annotations"
-    id = Column(Integer, primary_key=True)
+    __tablename__ = 'annotations'
+    id = Column(Integer, primary_key = True)
     uniprot = Column(String)
     genesymbol = Column(String)
     entity_type = Column(String)
@@ -46,13 +45,13 @@ class Annotations(Base):
 
 
 class Complexes(Base):
-    """
+    '''
     Definition for the `complexes` table columns and types.
-    """
+    '''
 
-    __tablename__ = "complexes"
-    _array_sep = {"components": "_", "components_genesymbols": "_"}
-    id = Column(Integer, primary_key=True)
+    __tablename__ = 'complexes'
+    _array_sep = {'components': '_', 'components_genesymbols': '_'}
+    id = Column(Integer, primary_key = True)
     name = Column(String)
     components = Column(ARRAY(String))
     components_genesymbols = Column(ARRAY(String))
@@ -63,12 +62,12 @@ class Complexes(Base):
 
 
 class Enzsub(Base):
-    """
+    '''
     Definition for the `enzyme-substrate` table columns and types.
-    """
+    '''
 
-    __tablename__ = "enzsub"
-    id = Column(Integer, primary_key=True)
+    __tablename__ = 'enzsub'
+    id = Column(Integer, primary_key = True)
     enzyme = Column(String)
     enzyme_genesymbol = Column(String)
     substrate = Column(String)
@@ -84,14 +83,14 @@ class Enzsub(Base):
 
 
 class Interactions(Base):
-    """
+    '''
     Definition for the `interactions` table columns and types.
-    """
+    '''
 
-    __tablename__ = "interactions"
-    id = Column(Integer, primary_key=True)
-    source = Column(String, nullable=True)
-    target = Column(String, nullable=True)
+    __tablename__ = 'interactions'
+    id = Column(Integer, primary_key = True)
+    source = Column(String, nullable = True)
+    target = Column(String, nullable = True)
     source_genesymbol = Column(String)
     target_genesymbol = Column(String)
     is_directed = Column(Boolean)
@@ -120,8 +119,8 @@ class Interactions(Base):
     dorothea_level = Column(ARRAY(String))
     type = Column(String)
     curation_effort = Column(Integer)
-    extra_attrs = Column(JSONB, nullable=True)
-    evidences = Column(JSONB, nullable=True)
+    extra_attrs = Column(JSONB, nullable = True)
+    evidences = Column(JSONB, nullable = True)
     ncbi_tax_id_source = Column(Integer)
     entity_type_source = Column(String)
     ncbi_tax_id_target = Column(Integer)
@@ -129,12 +128,12 @@ class Interactions(Base):
 
 
 class Intercell(Base):
-    """
+    '''
     Definition for the `intercell` table columns and types.
-    """
+    '''
 
-    __tablename__ = "intercell"
-    id = Column(Integer, primary_key=True)
+    __tablename__ = 'intercell'
+    id = Column(Integer, primary_key = True)
     category = Column(String)
     parent = Column(String)
     database = Column(String)

@@ -13,44 +13,40 @@
 # https://www.gnu.org/licenses/gpl-3.0.txt
 #
 
-
-import importlib.util
-import os
+from contextlib import closing, contextmanager
 from collections.abc import Generator
-import yaml
-from contextlib import (
-    closing,
-    contextmanager,
-)
+import os
 
-import psycopg2.extras
 from sqlalchemy import MetaData, inspect, create_engine
 from sqlalchemy.orm import Query, sessionmaker
-
+import yaml
+import psycopg2.extras
 
 from . import _log
 
 __all__ = [
-    "Connection",
-    "DEFAULTS",
-    "ensure_con",
+    'Connection',
+    'DEFAULTS',
+    'ensure_con',
 ]
 
 DEFAULTS = {
-    "user": "omnipath",
-    "password": "omnipath",
-    "host": "localhost",
-    "port": "5432",
-    "database": "omnipath",
+    'user': 'omnipath',
+    'password': 'omnipath',
+    'host': 'localhost',
+    'port': '5432',
+    'database': 'omnipath',
 }
 
 
 class Connection:
+
+
     def __init__(
-        self,
-        param: str | dict | None = None,
-        chunk_size: int = 1000,
-        **kwargs,
+            self,
+            param: str | dict | None = None,
+            chunk_size: int = 1000,
+            **kwargs,
     ):
         """
         Manage an SQLAlchemy+psycopg2 Postgres connection.
@@ -67,6 +63,7 @@ class Connection:
         self._parse_param()
         self.init()
 
+
     def _parse_param(self) -> None:
 
         self._from_file()
@@ -74,6 +71,7 @@ class Connection:
         if isinstance(self._param, dict):
 
             self._param = {**DEFAULTS, **self._param}
+
 
     def _from_file(self) -> None:
         """
@@ -84,11 +82,12 @@ class Connection:
 
             with closing(open(self._param)) as fp:
 
-                self._param = yaml.load(fp, Loader=yaml.FullLoader)
+                self._param = yaml.load(fp, Loader = yaml.FullLoader)
 
         else:
 
             self._param = self._param or {}
+
 
     @property
     def _uri(self) -> str:
@@ -96,8 +95,9 @@ class Connection:
         Connection URI string as used in SQLAlchemy.
         """
 
-        return "postgresql://{user}:{password}@" "{host}:{port}/{database}".format(
-            **self._param
+        return (
+            'postgresql://{user}:{password}@'
+            '{host}:{port}/{database}'.format(**self._param)
         )
 
     @property
@@ -112,28 +112,30 @@ class Connection:
 
         uri = self._uri
 
-        _log(f"Connecting to `{uri}`...")
+        _log(f'Connecting to `{uri}`...')
 
         self.engine = create_engine(uri)
-        Session = sessionmaker(bind=self.engine)
+        Session = sessionmaker(bind = self.engine)
         self.session = Session()
 
-        _log(f"Connected to `{uri}`.")
+        _log(f'Connected to `{uri}`.')
+
 
     def __del__(self):
 
-        if hasattr(self, "session"):
+        if hasattr(self, 'session'):
 
             self.session.close()
 
-        if hasattr(self, "engine"):
+        if hasattr(self, 'engine'):
 
             self.engine.dispose()
 
+
     def execute_values(
-        self,
-        query: str,
-        values: Generator[tuple, None, None],
+            self,
+            query: str,
+            values: Generator[tuple, None, None],
     ) -> None:
         """
         Insert by psycopg2.extras.execute_values.
@@ -151,7 +153,7 @@ class Connection:
 
                 try:
 
-                    _log(f"Executing query: {query}")
+                    _log(f'Executing query: {query}')
                     psycopg2.extras.execute_values(cur, query, values)
                     conn.commit()
 
@@ -159,6 +161,7 @@ class Connection:
 
                     conn.rollback()
                     raise e
+
 
     def execute(self, query: str | Query) -> Generator[tuple, None, None]:
         """
@@ -173,9 +176,9 @@ class Connection:
                 An SQL query to execute (Query object or string).
         """
 
-        query = getattr(query, "statement", query)
+        query = getattr(query, 'statement', query)
 
-        _log(f"Executing query: {query}")
+        _log(f'Executing query: {query}')
 
         with self.connect() as con:
 
@@ -185,13 +188,14 @@ class Connection:
 
                 yield from chunk
 
+
     @contextmanager
     def connect(self):
         """
         Context manager for connection management.
         """
 
-        _log("New connection...")
+        _log('New connection...')
         con = self.engine.connect()
 
         try:
@@ -202,20 +206,21 @@ class Connection:
 
             con.close()
 
+
     def wipe(self) -> None:
         """
         Wipe the database.
         """
 
-        _log("Wiping database")
+        _log('Wiping database')
         metadata = MetaData()
-        metadata.reflect(bind=self.engine)
-        metadata.drop_all(bind=self.engine)
+        metadata.reflect(bind = self.engine)
+        metadata.drop_all(bind = self.engine)
 
 
 def ensure_con(
-    con: Connection | dict | str,
-    reconnect: bool = False,
+        con: Connection | dict | str,
+        reconnect: bool = False,
 ) -> Connection:
     """
     Ensure that the provided connection is an instance of Connection.

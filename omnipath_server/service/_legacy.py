@@ -36,31 +36,31 @@ from .. import _log, _connection
 from ..schema import _legacy as _schema
 
 __all__ = [
-    "DOROTHEA_LEVELS",
-    "DOROTHEA_METHODS",
-    "ENTITY_TYPES",
-    "FORMATS",
-    "GEN_OF_STR",
-    "GEN_OF_TUPLES",
-    "INTERACTION_DATASETS",
-    "INTERACTION_TYPES",
-    "LICENSE_IGNORE",
-    "LegacyService",
-    "ORGANISMS",
-    "QUERY_TYPES",
-    "with_last",
+    'DOROTHEA_LEVELS',
+    'DOROTHEA_METHODS',
+    'ENTITY_TYPES',
+    'FORMATS',
+    'GEN_OF_STR',
+    'GEN_OF_TUPLES',
+    'INTERACTION_DATASETS',
+    'INTERACTION_TYPES',
+    'LICENSE_IGNORE',
+    'LegacyService',
+    'ORGANISMS',
+    'QUERY_TYPES',
+    'with_last',
 ]
 
 
-LICENSE_IGNORE = "ignore"
+LICENSE_IGNORE = 'ignore'
 FORMATS = Literal[
-    "raw",
-    "json",
-    "tab",
-    "text",
-    "tsv",
-    "table",
-    "query",
+    'raw',
+    'json',
+    'tab',
+    'text',
+    'tsv',
+    'table',
+    'query',
 ]
 ORGANISMS = Literal[
     9606,
@@ -68,49 +68,49 @@ ORGANISMS = Literal[
     10116,
 ]
 QUERY_TYPES = Literal[
-    "complexes",
-    "enzsub",
-    "interactions",
-    "intercell",
-    "annotations",
+    'complexes',
+    'enzsub',
+    'interactions',
+    'intercell',
+    'annotations',
 ]
 ENTITY_TYPES = Literal[
-    "complex",
-    "mirna",
-    "protein",
-    "small_molecule",
-    "lncrna",
-    "drug",
-    "metabolite",
-    "lipid",
+    'complex',
+    'mirna',
+    'protein',
+    'small_molecule',
+    'lncrna',
+    'drug',
+    'metabolite',
+    'lipid',
 ]
 INTERACTION_TYPES = Literal[
-    "post_translational",
-    "transcriptional",
-    "post_transcriptional",
-    "mirna_transcriptional",
-    "lncrna_post_transcriptional",
-    "small_molecule_protein",
+    'post_translational',
+    'transcriptional',
+    'post_transcriptional',
+    'mirna_transcriptional',
+    'lncrna_post_transcriptional',
+    'small_molecule_protein',
 ]
 INTERACTION_DATASETS = Literal[
-    "omnipath",
-    "kinaseextra",
-    "ligrecextra",
-    "pathwayextra",
-    "mirnatarget",
-    "dorothea",
-    "collectri",
-    "tf_target",
-    "lncrna_mrna",
-    "tf_mirna",
-    "small_molecule",
+    'omnipath',
+    'kinaseextra',
+    'ligrecextra',
+    'pathwayextra',
+    'mirnatarget',
+    'dorothea',
+    'collectri',
+    'tf_target',
+    'lncrna_mrna',
+    'tf_mirna',
+    'small_molecule',
 ]
-DOROTHEA_LEVELS = Literal["A", "B", "C", "D"]
+DOROTHEA_LEVELS = Literal['A', 'B', 'C', 'D']
 DOROTHEA_METHODS = Literal[
-    "curated",
-    "coexp",
-    "tfbs",
-    "chipseq",
+    'curated',
+    'coexp',
+    'tfbs',
+    'chipseq',
 ]
 GEN_OF_TUPLES = Generator[tuple, None, None]
 GEN_OF_STR = Generator[str, None, None]
@@ -123,751 +123,735 @@ resources_mod = None
 class LegacyService:
 
     query_param = {
-        "interactions": {
-            "array_args": {
-                "sources",
-                "targets",
-                "partners",
-                "resources",
-                "types",
-                "organisms",
-                "datasets",
-                "dorothea_levels",
-                "dorothea_methods",
-                "entity_types",
-                "fields",
+        'interactions': {
+            'array_args': {
+                'sources',
+                'targets',
+                'partners',
+                'resources',
+                'types',
+                'organisms',
+                'datasets',
+                'dorothea_levels',
+                'dorothea_methods',
+                'entity_types',
+                'fields',
             },
-            "select": {
-                "genesymbols": {"source_genesymbol", "target_genesymbol"},
-                "organism": {"ncbi_tax_id_source", "ncbi_tax_id_target"},
-                "entity_type": {"entity_type_source", "entity_type_target"},
-                "extra_attrs": "extra_attrs",
-                "evidences": "evidences",
-                "datasets": INTERACTION_DATASETS.__args__,
-                "dorothea_methods": {
-                    f"dorothea_{m}" for m in DOROTHEA_METHODS.__args__
+            'select': {
+                'genesymbols': {'source_genesymbol', 'target_genesymbol'},
+                'organism': {'ncbi_tax_id_source', 'ncbi_tax_id_target'},
+                'entity_type': {'entity_type_source', 'entity_type_target'},
+                'extra_attrs': 'extra_attrs',
+                'evidences': 'evidences',
+                'datasets': INTERACTION_DATASETS.__args__,
+                'dorothea_methods': {
+                    f'dorothea_{m}' for m in DOROTHEA_METHODS.__args__
                 },
             },
-            "select_args": {
-                "genesymbols",
-                "extra_attrs",
-                "evidences",
+            'select_args': {
+                'genesymbols',
+                'extra_attrs',
+                'evidences',
             },
-            "select_default": {
-                "source",
-                "target",
-                "is_directed",
-                "is_stimulation",
-                "is_inhibition",
-                "consensus_direction",
-                "consensus_stimulation",
-                "consensus_inhibition",
-                "type",
+            'select_default': {
+                'source',
+                'target',
+                'is_directed',
+                'is_stimulation',
+                'is_inhibition',
+                'consensus_direction',
+                'consensus_stimulation',
+                'consensus_inhibition',
+                'type',
             },
-            "where": {
-                "resources": "sources",
-                "types": "type",
-                "directed": "is_directed",
-                "organisms": "ncbi_tax_id_source:ncbi_tax_id_target",
-                "entity_types": "entity_type_source:entity_type_target",
+            'where': {
+                'resources': 'sources',
+                'types': 'type',
+                'directed': 'is_directed',
+                'organisms': 'ncbi_tax_id_source:ncbi_tax_id_target',
+                'entity_types': 'entity_type_source:entity_type_target',
             },
-            "where_partners": {
-                "sides": {
-                    "sources": "source",
-                    "targets": "target",
+            'where_partners': {
+                'sides': {
+                    'sources': 'source',
+                    'targets': 'target',
                 },
-                "operator": "source_target",
+                'operator': 'source_target',
             },
-            "where_bool": {
-                "dorothea_methods": {
-                    "curated": "dorothea_curated",
-                    "chipseq": "dorothea_chipseq",
-                    "tfbs": "dorothea_tfbs",
-                    "coexp": "dorothea_coexp",
+            'where_bool': {
+                'dorothea_methods': {
+                    'curated': 'dorothea_curated',
+                    'chipseq': 'dorothea_chipseq',
+                    'tfbs': 'dorothea_tfbs',
+                    'coexp': 'dorothea_coexp',
                 },
-                "datasets": {
-                    "omnipath",
-                    "kinaseextra",
-                    "ligrecextra",
-                    "pathwayextra",
-                    "mirnatarget",
-                    "dorothea",
-                    "collectri",
-                    "tf_target",
-                    "lncrna_mrna",
-                    "tf_mirna",
-                    "small_molecule",
+                'datasets': {
+                    'omnipath',
+                    'kinaseextra',
+                    'ligrecextra',
+                    'pathwayextra',
+                    'mirnatarget',
+                    'dorothea',
+                    'collectri',
+                    'tf_target',
+                    'lncrna_mrna',
+                    'tf_mirna',
+                    'small_molecule',
                 },
-                "signed": {
-                    "is_stimulation",
-                    "is_inhibition",
+                'signed': {
+                    'is_stimulation',
+                    'is_inhibition',
                 },
             },
-            "where_bool_override": {
-                "dorothea": {
-                    "dorothea_levels": "dorothea_level",
-                    "dorothea_methods": DOROTHEA_METHODS.__args__,
+            'where_bool_override': {
+                'dorothea': {
+                    'dorothea_levels': 'dorothea_level',
+                    'dorothea_methods': DOROTHEA_METHODS.__args__,
                 },
             },
         },
-        "complexes": {
-            "array_args": {
-                "resources",
-                "proteins",
+        'complexes': {
+            'array_args': {
+                'resources',
+                'proteins',
             },
-            "where": {
-                "resources": "sources",
-                "proteins": "components",
+            'where': {
+                'resources': 'sources',
+                'proteins': 'components',
             },
         },
-        "enzsub": {
-            "array_args": {
-                "enzymes",
-                "substrates",
-                "partners",
-                "resources",
-                "organisms",
-                "types",
-                "residues",
+        'enzsub': {
+            'array_args': {
+                'enzymes',
+                'substrates',
+                'partners',
+                'resources',
+                'organisms',
+                'types',
+                'residues',
             },
-            "select": {
-                "genesymbols": {"enzyme_genesymbol", "substrate_genesymbol"},
+            'select': {
+                'genesymbols': {'enzyme_genesymbol', 'substrate_genesymbol'},
             },
-            "select_args": {
-                "genesymbols",
+            'select_args': {
+                'genesymbols',
             },
-            "select_default": {
-                "enzyme",
-                "substrate",
-                "residue_type",
-                "residue_offset",
-                "modification",
+            'select_default': {
+                'enzyme',
+                'substrate',
+                'residue_type',
+                'residue_offset',
+                'modification',
             },
-            "where": {
-                "organisms": "ncbi_tax_id",
-                "types": "modification",
-                "resources": "sources",
-                "residues": "residue_type",
+            'where': {
+                'organisms': 'ncbi_tax_id',
+                'types': 'modification',
+                'resources': 'sources',
+                'residues': 'residue_type',
             },
-            "where_partners": {
-                "sides": {
-                    "enzymes": "enzyme",
-                    "substrates": "substrate",
+            'where_partners': {
+                'sides': {
+                    'enzymes': 'enzyme',
+                    'substrates': 'substrate',
                 },
-                "operator": "enzyme_substrate",
+                'operator': 'enzyme_substrate',
             },
         },
-        "intercell": {
-            "array_args": {
-                "proteins",
-                "resources",
-                "entity_types",
+        'intercell': {
+            'array_args': {
+                'proteins',
+                'resources',
+                'entity_types',
             },
-            "where": {
-                "resources": "database",
-                "entity_types": "entity_type",
-                "proteins": "uniprot:genesymbol",
-                "aspect": "aspect",
-                "scope": "scope",
-                "source": "source",
-                "categories": "category",
-                "parent": "parent",
-                "transmitter": "transmitter",
-                "receiver": "receiver",
-                "secreted": "secreted",
-                "plasma_membrane_transmembrane": "plasma_membrane_transmembrane",
-                "plasma_membrane_peripheral": "plasma_membrane_peripheral",
+            'where': {
+                'resources': 'database',
+                'entity_types': 'entity_type',
+                'proteins': 'uniprot:genesymbol',
+                'aspect': 'aspect',
+                'scope': 'scope',
+                'source': 'source',
+                'categories': 'category',
+                'parent': 'parent',
+                'transmitter': 'transmitter',
+                'receiver': 'receiver',
+                'secreted': 'secreted',
+                'plasma_membrane_transmembrane': 'plasma_membrane_transmembrane',
+                'plasma_membrane_peripheral': 'plasma_membrane_peripheral',
             },
-            "where_synonyms": {
-                "trans": "transmitter",
-                "rec": "receiver",
-                "sec": "secreted",
-                "pmtm": "plasma_membrane_transmembrane",
-                "pmp": "plasma_membrane_peripheral",
+            'where_synonyms': {
+                'trans': 'transmitter',
+                'rec': 'receiver',
+                'sec': 'secreted',
+                'pmtm': 'plasma_membrane_transmembrane',
+                'pmp': 'plasma_membrane_peripheral',
             },
         },
-        "annotations": {
-            "array_args": {
-                "proteins",
-                "resources",
-                "entity_types",
+        'annotations': {
+            'array_args': {
+                'proteins',
+                'resources',
+                'entity_types',
             },
-            "where": {
-                "resources": "source",
-                "entity_types": "entity_type",
-                "proteins": "uniprot:genesymbol",
+            'where': {
+                'resources': 'source',
+                'entity_types': 'entity_type',
+                'proteins': 'uniprot:genesymbol',
             },
         },
     }
     query_types = {
-        "annotations",
-        "intercell",
-        "interactions",
-        "enz_sub",
-        "enzsub",
-        "ptms",
-        "complexes",
-        "about",
-        "info",
-        "queries",
-        "annotations_summary",
-        "intercell_summary",
+        'annotations',
+        'intercell',
+        'interactions',
+        'enz_sub',
+        'enzsub',
+        'ptms',
+        'complexes',
+        'about',
+        'info',
+        'queries',
+        'annotations_summary',
+        'intercell_summary',
     }
     data_query_types = {
-        "annotations",
-        "intercell",
-        "interactions",
-        "enzsub",
-        "complexes",
+        'annotations',
+        'intercell',
+        'interactions',
+        'enzsub',
+        'complexes',
     }
     list_fields = {
-        "sources",
-        "references",
-        "isoforms",
+        'sources',
+        'references',
+        'isoforms',
     }
 
     int_list_fields = {
-        "references",
-        "isoforms",
+        'references',
+        'isoforms',
     }
 
     field_synonyms = {
-        "organism": "ncbi_tax_id",
-        "sources": "resources",
-        "databases": "resources",
+        'organism': 'ncbi_tax_id',
+        'sources': 'resources',
+        'databases': 'resources',
     }
 
     args_reference = {
-        "interactions": {
-            "header": None,
-            "format": FORMATS.__args__,
-            "license": {
-                "ignore",
-                "academic",
-                "non_profit",
-                "nonprofit",
-                "for_profit",
-                "forprofit",
-                "commercial",
+        'interactions': {
+            'header': None,
+            'format': FORMATS.__args__,
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
             },
-            "password": None,
-            "limit": None,
-            "datasets": {
-                "omnipath",
-                "dorothea",
-                "collectri",
-                "tf_target",
-                "tf_mirna",
-                "lncrna_mrna",
-                "kinaseextra",
-                "ligrecextra",
-                "pathwayextra",
-                "mirnatarget",
-                "small_molecule",
+            'password': None,
+            'limit': None,
+            'datasets': {
+                'omnipath',
+                'dorothea',
+                'collectri',
+                'tf_target',
+                'tf_mirna',
+                'lncrna_mrna',
+                'kinaseextra',
+                'ligrecextra',
+                'pathwayextra',
+                'mirnatarget',
+                'small_molecule',
             },
-            "types": {
-                "post_translational",
-                "transcriptional",
-                "post_transcriptional",
-                "mirna_transcriptional",
-                "lncrna_post_transcriptional",
-                "small_molecule_protein",
+            'types': {
+                'post_translational',
+                'transcriptional',
+                'post_transcriptional',
+                'mirna_transcriptional',
+                'lncrna_post_transcriptional',
+                'small_molecule_protein',
             },
-            "sources": None,
-            "resources": None,
-            "databases": None,
-            "targets": None,
-            "partners": None,
-            "genesymbols": _const.BOOLEAN_VALUES,
-            "evidences": None,
-            "extra_attrs": None,
-            "fields": {
-                "entity_type",
-                "references",
-                "sources",
-                "dorothea_level",
-                "dorothea_methods",
-                "type",
-                "ncbi_tax_id",
-                "databases",
-                "resources",
-                "organism",
-                "curation_effort",
-                "datasets",
-                "extra_attrs",
-                "evidences",
+            'sources':  None,
+            'resources': None,
+            'databases': None,
+            'targets':  None,
+            'partners': None,
+            'genesymbols': _const.BOOLEAN_VALUES,
+            'evidences': None,
+            'extra_attrs': None,
+            'fields': {
+                'entity_type',
+                'references',
+                'sources',
+                'dorothea_level',
+                'dorothea_methods',
+                'type',
+                'ncbi_tax_id',
+                'databases',
+                'resources',
+                'organism',
+                'curation_effort',
+                'datasets',
+                'extra_attrs',
+                'evidences',
             },
-            "dorothea_levels": {"A", "B", "C", "D", "E"},
-            "dorothea_methods": {
-                "curated",
-                "chipseq",
-                "coexp",
-                "tfbs",
-                "dorothea_curated",
-                "dorothea_chipseq",
-                "dorothea_coexp",
-                "dorothea_tfbs",
+            'dorothea_levels':  {'A', 'B', 'C', 'D', 'E'},
+            'dorothea_methods': {
+                'curated',
+                'chipseq',
+                'coexp',
+                'tfbs',
+                'dorothea_curated',
+                'dorothea_chipseq',
+                'dorothea_coexp',
+                'dorothea_tfbs',
             },
-            "organisms": ORGANISMS.__args__,
-            "source_target": {
-                "AND",
-                "OR",
-                "and",
-                "or",
+            'organisms': ORGANISMS.__args__,
+            'source_target': {
+                'AND',
+                'OR',
+                'and',
+                'or',
             },
-            "directed": _const.BOOLEAN_VALUES,
-            "signed": _const.BOOLEAN_VALUES,
-            "loops": _const.BOOLEAN_VALUES,
-            "entity_types": ENTITY_TYPES.__args__,
+            'directed': _const.BOOLEAN_VALUES,
+            'signed': _const.BOOLEAN_VALUES,
+            'loops': _const.BOOLEAN_VALUES,
+            'entity_types': ENTITY_TYPES.__args__,
         },
-        "enzsub": {
-            "header": None,
-            "format": FORMATS.__args__,
-            "license": {
-                "ignore",
-                "academic",
-                "non_profit",
-                "nonprofit",
-                "for_profit",
-                "forprofit",
-                "commercial",
+        'enzsub': {
+            'header': None,
+            'format': FORMATS.__args__,
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
             },
-            "password": None,
-            "limit": None,
-            "enzymes": None,
-            "substrates": None,
-            "partners": None,
-            "genesymbols": _const.BOOLEAN_VALUES,
-            "organisms": ORGANISMS.__args__,
-            "databases": None,
-            "resources": None,
-            "residues": None,
-            "modification": None,
-            "types": None,
-            "loops": _const.BOOLEAN_VALUES,
-            "fields": {
-                "sources",
-                "references",
-                "ncbi_tax_id",
-                "organism",
-                "databases",
-                "resources",
-                "isoforms",
-                "curation_effort",
+            'password': None,
+            'limit': None,
+            'enzymes':     None,
+            'substrates':  None,
+            'partners':    None,
+            'genesymbols': _const.BOOLEAN_VALUES,
+            'organisms': ORGANISMS.__args__,
+            'databases': None,
+            'resources': None,
+            'residues':  None,
+            'modification': None,
+            'types': None,
+            'loops': _const.BOOLEAN_VALUES,
+            'fields': {
+                'sources',
+                'references',
+                'ncbi_tax_id',
+                'organism',
+                'databases',
+                'resources',
+                'isoforms',
+                'curation_effort',
             },
-            "enzyme_substrate": {
-                "AND",
-                "OR",
-                "and",
-                "or",
-            },
-        },
-        "annotations": {
-            "header": None,
-            "format": FORMATS.__args__,
-            "license": {
-                "ignore",
-                "academic",
-                "non_profit",
-                "nonprofit",
-                "for_profit",
-                "forprofit",
-                "commercial",
-            },
-            "password": None,
-            "limit": None,
-            "databases": None,
-            "resources": None,
-            "proteins": None,
-            "fields": None,
-            "genesymbols": _const.BOOLEAN_VALUES,
-            "entity_types": ENTITY_TYPES.__args__,
-        },
-        "annotations_summary": {
-            "header": None,
-            "format": FORMATS.__args__,
-            "databases": None,
-            "resources": None,
-            "fields": None,
-            "cytoscape": _const.BOOLEAN_VALUES,
-        },
-        "intercell": {
-            "header": None,
-            "format": FORMATS.__args__,
-            "license": {
-                "ignore",
-                "academic",
-                "non_profit",
-                "nonprofit",
-                "for_profit",
-                "forprofit",
-                "commercial",
-            },
-            "password": None,
-            "limit": None,
-            "scope": {
-                "specific",
-                "generic",
-            },
-            "aspect": {
-                "functional",
-                "locational",
-            },
-            "source": {
-                "resource_specific",
-                "composite",
-            },
-            "categories": None,
-            "databases": None,
-            "resources": None,
-            "parent": None,
-            "proteins": None,
-            "fields": None,
-            "entity_types": ENTITY_TYPES.__args__,
-            "transmitter": _const.BOOLEAN_VALUES,
-            "receiver": _const.BOOLEAN_VALUES,
-            "trans": _const.BOOLEAN_VALUES,
-            "rec": _const.BOOLEAN_VALUES,
-            "secreted": _const.BOOLEAN_VALUES,
-            "plasma_membrane_peripheral": _const.BOOLEAN_VALUES,
-            "plasma_membrane_transmembrane": _const.BOOLEAN_VALUES,
-            "sec": _const.BOOLEAN_VALUES,
-            "pmp": _const.BOOLEAN_VALUES,
-            "pmtm": _const.BOOLEAN_VALUES,
-            "causality": {
-                "transmitter",
-                "trans",
-                "receiver",
-                "rec",
-                "both",
-            },
-            "topology": {
-                "secreted",
-                "sec",
-                "plasma_membrane_peripheral",
-                "pmp",
-                "plasma_membrane_transmembrane",
-                "pmtm",
+            'enzyme_substrate': {
+                'AND',
+                'OR',
+                'and',
+                'or',
             },
         },
-        "intercell_summary": {
-            "header": None,
-            "format": FORMATS.__args__,
-            "scope": {
-                "specific",
-                "generic",
+        'annotations': {
+            'header': None,
+            'format': FORMATS.__args__,
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
             },
-            "aspect": {
-                "functional",
-                "locational",
-            },
-            "source": {
-                "resource_specific",
-                "generic",
-            },
-            "categories": None,
-            "resources": None,
-            "databases": None,
-            "parent": None,
-            "fields": None,
-            "transmitter": _const.BOOLEAN_VALUES,
-            "receiver": _const.BOOLEAN_VALUES,
-            "trans": _const.BOOLEAN_VALUES,
-            "rec": _const.BOOLEAN_VALUES,
-            "secreted": _const.BOOLEAN_VALUES,
-            "plasma_membrane_peripheral": _const.BOOLEAN_VALUES,
-            "plasma_membrane_transmembrane": _const.BOOLEAN_VALUES,
-            "sec": _const.BOOLEAN_VALUES,
-            "pmp": _const.BOOLEAN_VALUES,
-            "pmtm": _const.BOOLEAN_VALUES,
+            'password': None,
+            'limit': None,
+            'databases': None,
+            'resources': None,
+            'proteins': None,
+            'fields': None,
+            'genesymbols': _const.BOOLEAN_VALUES,
+            'entity_types': ENTITY_TYPES.__args__,
         },
-        "complexes": {
-            "header": None,
-            "format": FORMATS.__args__,
-            "license": {
-                "ignore",
-                "academic",
-                "non_profit",
-                "nonprofit",
-                "for_profit",
-                "forprofit",
-                "commercial",
-            },
-            "password": None,
-            "limit": None,
-            "databases": None,
-            "resources": None,
-            "proteins": None,
-            "fields": None,
+        'annotations_summary': {
+            'header': None,
+            'format': FORMATS.__args__,
+            'databases': None,
+            'resources': None,
+            'fields': None,
+            'cytoscape': _const.BOOLEAN_VALUES,
         },
-        "resources": {
-            "license": {
-                "ignore",
-                "academic",
-                "non_profit",
-                "nonprofit",
-                "for_profit",
-                "forprofit",
-                "commercial",
+        'intercell': {
+            'header': None,
+            'format': FORMATS.__args__,
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
             },
-            "format": {
-                "json",
+            'password': None,
+            'limit': None,
+            'scope': {
+                'specific',
+                'generic',
             },
-            "datasets": {
-                "interactions",
-                "interaction",
-                "network",
-                "enzsub",
-                "enz_sub",
-                "enzyme-substrate",
-                "annotations",
-                "annotation",
-                "annot",
-                "intercell",
-                "complex",
-                "complexes",
+            'aspect': {
+                'functional',
+                'locational',
             },
-            "subtypes": None,
+            'source': {
+                'resource_specific',
+                'composite',
+            },
+            'categories': None,
+            'databases': None,
+            'resources': None,
+            'parent': None,
+            'proteins': None,
+            'fields': None,
+            'entity_types': ENTITY_TYPES.__args__,
+            'transmitter': _const.BOOLEAN_VALUES,
+            'receiver': _const.BOOLEAN_VALUES,
+            'trans': _const.BOOLEAN_VALUES,
+            'rec': _const.BOOLEAN_VALUES,
+            'secreted': _const.BOOLEAN_VALUES,
+            'plasma_membrane_peripheral': _const.BOOLEAN_VALUES,
+            'plasma_membrane_transmembrane': _const.BOOLEAN_VALUES,
+            'sec': _const.BOOLEAN_VALUES,
+            'pmp': _const.BOOLEAN_VALUES,
+            'pmtm': _const.BOOLEAN_VALUES,
+            'causality': {
+                'transmitter',
+                'trans',
+                'receiver',
+                'rec',
+                'both',
+            },
+            'topology': {
+                'secreted',
+                'sec',
+                'plasma_membrane_peripheral',
+                'pmp',
+                'plasma_membrane_transmembrane',
+                'pmtm',
+            },
         },
-        "queries": {
-            "format": FORMATS.__args__,
+        'intercell_summary': {
+            'header': None,
+            'format': FORMATS.__args__,
+            'scope': {
+                'specific',
+                'generic',
+            },
+            'aspect': {
+                'functional',
+                'locational',
+            },
+            'source': {
+                'resource_specific',
+                'generic',
+            },
+            'categories': None,
+            'resources': None,
+            'databases': None,
+            'parent': None,
+            'fields': None,
+            'transmitter': _const.BOOLEAN_VALUES,
+            'receiver': _const.BOOLEAN_VALUES,
+            'trans': _const.BOOLEAN_VALUES,
+            'rec': _const.BOOLEAN_VALUES,
+            'secreted': _const.BOOLEAN_VALUES,
+            'plasma_membrane_peripheral': _const.BOOLEAN_VALUES,
+            'plasma_membrane_transmembrane': _const.BOOLEAN_VALUES,
+            'sec': _const.BOOLEAN_VALUES,
+            'pmp': _const.BOOLEAN_VALUES,
+            'pmtm': _const.BOOLEAN_VALUES,
+        },
+        'complexes': {
+            'header': None,
+            'format': FORMATS.__args__,
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
+            },
+            'password': None,
+            'limit': None,
+            'databases': None,
+            'resources': None,
+            'proteins': None,
+            'fields': None,
+        },
+        'resources': {
+            'license': {
+                'ignore',
+                'academic',
+                'non_profit',
+                'nonprofit',
+                'for_profit',
+                'forprofit',
+                'commercial',
+            },
+            'format': {
+                'json',
+            },
+            'datasets': {
+                'interactions',
+                'interaction',
+                'network',
+                'enzsub',
+                'enz_sub',
+                'enzyme-substrate',
+                'annotations',
+                'annotation',
+                'annot',
+                'intercell',
+                'complex',
+                'complexes',
+            },
+            'subtypes': None,
+        },
+        'queries': {
+            'format': FORMATS.__args__,
         },
     }
     query_type_synonyms = {
-        "interactions": "interactions",
-        "interaction": "interactions",
-        "network": "interactions",
-        "enz_sub": "enzsub",
-        "enz-sub": "enzsub",
-        "ptms": "enzsub",
-        "ptm": "enzsub",
-        "enzyme-substrate": "enzsub",
-        "enzyme_substrate": "enzsub",
-        "annotations": "annotations",
-        "annotation": "annotations",
-        "annot": "annotations",
-        "intercell": "intercell",
-        "intercellular": "intercell",
-        "inter_cell": "intercell",
-        "inter-cell": "intercell",
-        "complex": "complexes",
-        "complexes": "complexes",
+        'interactions': 'interactions',
+        'interaction': 'interactions',
+        'network': 'interactions',
+        'enz_sub': 'enzsub',
+        'enz-sub': 'enzsub',
+        'ptms': 'enzsub',
+        'ptm': 'enzsub',
+        'enzyme-substrate': 'enzsub',
+        'enzyme_substrate': 'enzsub',
+        'annotations': 'annotations',
+        'annotation': 'annotations',
+        'annot': 'annotations',
+        'intercell': 'intercell',
+        'intercellular': 'intercell',
+        'inter_cell': 'intercell',
+        'inter-cell': 'intercell',
+        'complex': 'complexes',
+        'complexes': 'complexes',
     }
     datasets_ = {
-        "omnipath",
-        "dorothea",
-        "collectri",
-        "tf_target",
-        "kinaseextra",
-        "ligrecextra",
-        "pathwayextra",
-        "mirnatarget",
-        "tf_mirna",
-        "lncrna_mrna",
-        "small_molecule",
+        'omnipath',
+        'dorothea',
+        'collectri',
+        'tf_target',
+        'kinaseextra',
+        'ligrecextra',
+        'pathwayextra',
+        'mirnatarget',
+        'tf_mirna',
+        'lncrna_mrna',
+        'small_molecule',
     }
-    dorothea_methods = {"curated", "coexp", "chipseq", "tfbs"}
+    dorothea_methods = {'curated', 'coexp', 'chipseq', 'tfbs'}
     dataset2type = {
-        "omnipath": "post_translational",
-        "dorothea": "transcriptional",
-        "collectri": "transcriptional",
-        "tf_target": "transcriptional",
-        "kinaseextra": "post_translational",
-        "ligrecextra": "post_translational",
-        "pathwayextra": "post_translational",
-        "mirnatarget": "post_transcriptional",
-        "tf_mirna": "mirna_transcriptional",
-        "lncrna_mrna": "lncrna_post_transcriptional",
-        "small_molecule": "small_molecule_protein",
+        'omnipath': 'post_translational',
+        'dorothea': 'transcriptional',
+        'collectri': 'transcriptional',
+        'tf_target': 'transcriptional',
+        'kinaseextra': 'post_translational',
+        'ligrecextra': 'post_translational',
+        'pathwayextra': 'post_translational',
+        'mirnatarget': 'post_transcriptional',
+        'tf_mirna': 'mirna_transcriptional',
+        'lncrna_mrna': 'lncrna_post_transcriptional',
+        'small_molecule': 'small_molecule_protein',
     }
     interaction_fields = {
-        "references",
-        "sources",
-        "dorothea_level",
-        "dorothea_curated",
-        "dorothea_chipseq",
-        "dorothea_tfbs",
-        "dorothea_coexp",
-        "type",
-        "ncbi_tax_id",
-        "databases",
-        "organism",
-        "curation_effort",
-        "resources",
-        "entity_type",
-        "datasets",
-        "extra_attrs",
-        "evidences",
+        'references', 'sources', 'dorothea_level',
+        'dorothea_curated', 'dorothea_chipseq',
+        'dorothea_tfbs', 'dorothea_coexp',
+        'type', 'ncbi_tax_id', 'databases', 'organism',
+        'curation_effort', 'resources', 'entity_type',
+        'datasets', 'extra_attrs', 'evidences',
     }
     enzsub_fields = {
-        "references",
-        "sources",
-        "databases",
-        "isoforms",
-        "organism",
-        "ncbi_tax_id",
-        "curation_effort",
-        "resources",
+        'references', 'sources', 'databases',
+        'isoforms', 'organism', 'ncbi_tax_id',
+        'curation_effort', 'resources',
     }
     default_input_files = {
-        "interactions": "omnipath_webservice_interactions.tsv",
-        "enzsub": "omnipath_webservice_enz_sub.tsv",
-        "annotations": "omnipath_webservice_annotations.tsv",
-        "complexes": "omnipath_webservice_complexes.tsv",
-        "intercell": "omnipath_webservice_intercell.tsv",
+        'interactions': 'omnipath_webservice_interactions.tsv',
+        'enzsub': 'omnipath_webservice_enz_sub.tsv',
+        'annotations': 'omnipath_webservice_annotations.tsv',
+        'complexes': 'omnipath_webservice_complexes.tsv',
+        'intercell': 'omnipath_webservice_intercell.tsv',
     }
     default_dtypes = collections.defaultdict(
         dict,
-        interactions={
-            "source": "category",
-            "target": "category",
-            "source_genesymbol": "category",
-            "target_genesymbol": "category",
-            "is_directed": "int8",
-            "is_stimulation": "int8",
-            "is_inhibition": "int8",
-            "consensus_direction": "int8",
-            "consensus_stimulation": "int8",
-            "consensus_inhibition": "int8",
-            "sources": "category",
-            "references": "category",
-            "dorothea_curated": "category",
-            "dorothea_chipseq": "category",
-            "dorothea_tfbs": "category",
-            "dorothea_coexp": "category",
-            "dorothea_level": "category",
-            "type": "category",
-            "ncbi_tax_id_source": "int16",
-            "ncbi_tax_id_target": "int16",
-            "entity_type_source": "category",
-            "entity_type_target": "category",
-            "curation_effort": "int16",
-            "extra_attrs": "category",
-            "evidences": "category",
+        interactions = {
+            'source': 'category',
+            'target': 'category',
+            'source_genesymbol': 'category',
+            'target_genesymbol': 'category',
+            'is_directed': 'int8',
+            'is_stimulation': 'int8',
+            'is_inhibition': 'int8',
+            'consensus_direction': 'int8',
+            'consensus_stimulation': 'int8',
+            'consensus_inhibition': 'int8',
+            'sources': 'category',
+            'references': 'category',
+            'dorothea_curated': 'category',
+            'dorothea_chipseq': 'category',
+            'dorothea_tfbs': 'category',
+            'dorothea_coexp': 'category',
+            'dorothea_level': 'category',
+            'type': 'category',
+            'ncbi_tax_id_source': 'int16',
+            'ncbi_tax_id_target': 'int16',
+            'entity_type_source': 'category',
+            'entity_type_target': 'category',
+            'curation_effort': 'int16',
+            'extra_attrs': 'category',
+            'evidences': 'category',
         },
-        annotations={
-            "uniprot": "category",
-            "genesymbol": "category",
-            "entity_type": "category",
-            "source": "category",
-            "label": "category",
-            "value": "category",
-            "record_id": "uint32",
+        annotations = {
+            'uniprot': 'category',
+            'genesymbol': 'category',
+            'entity_type': 'category',
+            'source': 'category',
+            'label': 'category',
+            'value': 'category',
+            'record_id': 'uint32',
         },
-        enzsub={
-            "enzyme": "category",
-            "substrate": "category",
-            "enzyme_genesymbol": "category",
-            "substrate_genesymbol": "category",
-            "isoforms": "category",
-            "residue_type": "category",
-            "residue_offset": "uint16",
-            "modification": "category",
-            "sources": "category",
-            "references": "category",
-            "ncbi_tax_id": "int16",
-            "curation_effort": "int32",
+        enzsub = {
+            'enzyme': 'category',
+            'substrate': 'category',
+            'enzyme_genesymbol': 'category',
+            'substrate_genesymbol': 'category',
+            'isoforms': 'category',
+            'residue_type': 'category',
+            'residue_offset': 'uint16',
+            'modification': 'category',
+            'sources': 'category',
+            'references': 'category',
+            'ncbi_tax_id': 'int16',
+            'curation_effort': 'int32',
         },
-        complexes={
-            "name": "category",
-            "stoichiometry": "category",
-            "sources": "category",
-            "references": "category",
-            "identifiers": "category",
+        complexes = {
+            'name': 'category',
+            'stoichiometry': 'category',
+            'sources': 'category',
+            'references': 'category',
+            'identifiers': 'category',
         },
-        intercell={
-            "category": "category",
-            "database": "category",
-            "uniprot": "category",
-            "genesymbol": "category",
-            "parent": "category",
-            "aspect": "category",
-            "scope": "category",
-            "source": "category",
-            "entity_type": "category",
-            "consensus_score": "uint16",
-            "transmitter": "bool",
-            "receiver": "bool",
-            "secreted": "bool",
-            "plasma_membrane_transmembrane": "bool",
-            "plasma_membrane_peripheral": "bool",
+        intercell = {
+            'category': 'category',
+            'database': 'category',
+            'uniprot': 'category',
+            'genesymbol': 'category',
+            'parent': 'category',
+            'aspect': 'category',
+            'scope': 'category',
+            'source': 'category',
+            'entity_type': 'category',
+            'consensus_score': 'uint16',
+            'transmitter': 'bool',
+            'receiver': 'bool',
+            'secreted': 'bool',
+            'plasma_membrane_transmembrane': 'bool',
+            'plasma_membrane_peripheral': 'bool',
         },
     )
     # the annotation attributes served for the cytoscape app
     cytoscape_attributes = {
-        ("Zhong2015", "type"),
-        ("MatrixDB", "mainclass"),
-        ("Matrisome", ("mainclass", "subclass", "subsubclass")),
+        ('Zhong2015', 'type'),
+        ('MatrixDB', 'mainclass'),
+        ('Matrisome', ('mainclass', 'subclass', 'subsubclass')),
         # ('TFcensus', 'in TFcensus'),
-        ("Locate", ("location", "cls")),
+        ('Locate', ('location', 'cls')),
         (
-            "Phosphatome",
+            'Phosphatome',
             (
-                "family",
-                "subfamily",
+                'family',
+                'subfamily',
                 #'has_protein_substrates',
             ),
         ),
-        ("CancerSEA", "state"),
-        ("GO_Intercell", "mainclass"),
-        ("Adhesome", "mainclass"),
-        ("SignaLink3", "pathway"),
+        ('CancerSEA', 'state'),
+        ('GO_Intercell', 'mainclass'),
+        ('Adhesome', 'mainclass'),
+        ('SignaLink3', 'pathway'),
         (
-            "HPA_secretome",
+            'HPA_secretome',
             (
-                "mainclass",
+                'mainclass',
                 #'secreted',
             ),
         ),
         (
-            "OPM",
+            'OPM',
             (
-                "membrane",
-                "family",
+                'membrane',
+                'family',
                 #'transmembrane',
             ),
         ),
-        ("KEGG", "pathway"),
-        # (
-        #'CellPhoneDB',
-        # (
-        ## 'receptor',
-        ## 'peripheral',
-        ## 'secreted',
-        ## 'transmembrane',
-        ## 'receptor_class',
-        ## 'secreted_class',
-        # )
-        # ),
-        ("kinase.com", ("group", "family", "subfamily")),
-        ("Membranome", ("membrane",)),
-        # ('CSPA', 'in CSPA'),
-        # ('MSigDB', 'geneset'),
-        # ('Integrins', 'in Integrins'),
-        ("HGNC", "mainclass"),
-        ("CPAD", ("pathway", "effect_on_cancer", "cancer")),
-        ("Signor", "pathway"),
-        ("Ramilowski2015", "mainclass"),
-        ("HPA_subcellular", "location"),
-        # ('DisGeNet', 'disease'),
-        ("Surfaceome", ("mainclass", "subclasses")),
-        ("IntOGen", "role"),
-        ("HPMR", ("role", "mainclass", "subclass", "subsubclass")),
-        # ('CancerGeneCensus',
-        # (
-        ##'hallmark',
-        ##'somatic',
-        ##'germline',
-        #'tumour_types_somatic',
-        #'tumour_types_germline',
-        # )
-        # ),
-        # ('DGIdb', 'category'),
-        ("ComPPI", "location"),
-        ("Exocarta", "vesicle"),
-        ("Vesiclepedia", "vesicle"),
-        ("Ramilowski_location", "location"),
-        ("LRdb", ("role", "cell_type")),
+        ('KEGG', 'pathway'),
+        #(
+            #'CellPhoneDB',
+            #(
+                ## 'receptor',
+                ## 'peripheral',
+                ## 'secreted',
+                ## 'transmembrane',
+                ## 'receptor_class',
+                ## 'secreted_class',
+            #)
+        #),
+        ('kinase.com', ('group', 'family', 'subfamily')),
+        ('Membranome', ('membrane',)),
+        #('CSPA', 'in CSPA'),
+        #('MSigDB', 'geneset'),
+        #('Integrins', 'in Integrins'),
+        ('HGNC', 'mainclass'),
+        ('CPAD', ('pathway', 'effect_on_cancer', 'cancer')),
+        ('Signor', 'pathway'),
+        ('Ramilowski2015', 'mainclass'),
+        ('HPA_subcellular', 'location'),
+        #('DisGeNet', 'disease'),
+        ('Surfaceome', ('mainclass', 'subclasses')),
+        ('IntOGen', 'role'),
+        ('HPMR', ('role', 'mainclass', 'subclass', 'subsubclass')),
+        #('CancerGeneCensus',
+            #(
+                ##'hallmark',
+                ##'somatic',
+                ##'germline',
+                #'tumour_types_somatic',
+                #'tumour_types_germline',
+            #)
+        #),
+        #('DGIdb', 'category'),
+        ('ComPPI', 'location'),
+        ('Exocarta', 'vesicle'),
+        ('Vesiclepedia', 'vesicle'),
+        ('Ramilowski_location', 'location'),
+        ('LRdb', ('role', 'cell_type')),
     }
 
     def __init__(self, con: _connection.Connection | dict | None = None):
@@ -880,9 +864,10 @@ class LegacyService:
                 with the connection configuration parameters.
         """
 
-        _log("Creating LegacyService.")
+        _log('Creating LegacyService.')
 
         self._connect(con)
+
 
     def reload(self):
         """
@@ -890,10 +875,11 @@ class LegacyService:
         """
 
         modname = self.__class__.__module__
-        mod = __import__(modname, fromlist=[modname.split(".")[0]])
+        mod = __import__(modname, fromlist = [modname.split('.')[0]])
         imp.reload(mod)
         new = getattr(mod, self.__class__.__name__)
-        setattr(self, "__class__", new)
+        setattr(self, '__class__', new)
+
 
     def _connect(self, con: _connection.Connection | dict | None = None):
         """
@@ -910,40 +896,44 @@ class LegacyService:
         if isinstance(con, dict):
 
             con = {
-                param: session.config.get(
-                    f"legacy_db_{param}",
-                    override=con.get(param, None),
-                    default=default,
-                )
+                    param:
+                    session.config.get(
+                        f'legacy_db_{param}',
+                        override = con.get(param, None),
+                        default = default,
+                    )
                 for param, default in _connection.DEFAULTS.items()
             }
 
         self.con = _connection.ensure_con(con)
 
+
     def _preprocess_annotations(self):
 
-        _log("Preprocessing annotations.")
+        _log('Preprocessing annotations.')
 
         query = "SELECT source, label, ARRAY_AGG(DISTINCT value) FROM annotations GROUP BY source, label;"
-
+        
         return self.con.execute(text(query))
+
 
     def _preprocess_intercell(self):
 
-        if "intercell" not in self.data:
+        if 'intercell' not in self.data:
 
             return
 
-        _log("Preprocessing intercell data.")
-        tbl = self.data["intercell"]
-        tbl.drop("full_name", axis=1, inplace=True, errors="ignore")
-        self.data["intercell_summary"] = tbl.filter(
-            ["category", "parent", "database"],
+        _log('Preprocessing intercell data.')
+        tbl = self.data['intercell']
+        tbl.drop('full_name', axis = 1, inplace = True, errors = 'ignore')
+        self.data['intercell_summary'] = tbl.filter(
+            ['category', 'parent', 'database'],
         ).drop_duplicates()
+
 
     def _update_resources(self):
 
-        _log("Updating resource information.")
+        _log('Updating resource information.')
 
         self._resources_dict = collections.defaultdict(dict)
 
@@ -960,10 +950,10 @@ class LegacyService:
             # finding out what is the name of the column with the resources
             # as this is different across the tables
             for colname, argname in (
-                ("database", "databases"),
-                ("sources", "databases"),
-                ("source", "databases"),
-                ("category", "categories"),
+                ('database', 'databases'),
+                ('sources', 'databases'),
+                ('source', 'databases'),
+                ('category', 'categories'),
             ):
 
                 if colname in tbl.columns:
@@ -974,35 +964,37 @@ class LegacyService:
             values = sorted(
                 set(
                     itertools.chain(
-                        *(val.split(";") for val in getattr(tbl, colname)),
+                        *(
+                            val.split(';') for val in getattr(tbl, colname)
+                        ),
                     ),
                 ),
             )
 
             for db in values:
 
-                if "license" not in self._resources_dict[db]:
+                if 'license' not in self._resources_dict[db]:
 
                     license = res_ctrl.license(db)
 
                     if license is None:
 
-                        msg = "No license for resource `%s`." % str(db)
+                        msg = 'No license for resource `%s`.' % str(db)
                         _log(msg)
                         raise RuntimeError(msg)
 
                     license_data = license.features
-                    license_data["name"] = license.name
-                    license_data["full_name"] = license.full_name
-                    self._resources_dict[db]["license"] = license_data
+                    license_data['name'] = license.name
+                    license_data['full_name'] = license.full_name
+                    self._resources_dict[db]['license'] = license_data
 
-                if "queries" not in self._resources_dict[db]:
+                if 'queries' not in self._resources_dict[db]:
 
-                    self._resources_dict[db]["queries"] = {}
+                    self._resources_dict[db]['queries'] = {}
 
-                if query_type not in self._resources_dict[db]["queries"]:
+                if query_type not in self._resources_dict[db]['queries']:
 
-                    if query_type == "interactions":
+                    if query_type == 'interactions':
 
                         datasets = set()
 
@@ -1022,29 +1014,33 @@ class LegacyService:
                                     datasets.add(dataset)
                                     break
 
-                        self._resources_dict[db]["queries"][query_type] = {
-                            "datasets": sorted(datasets),
+                        self._resources_dict[db]['queries'][query_type] = {
+                            'datasets': sorted(datasets),
                         }
 
-                    elif query_type == "intercell":
+                    elif query_type == 'intercell':
 
-                        tbl_db = tbl[(tbl.database == db) & (tbl.scope == "generic")]
+                        tbl_db = tbl[
+                            (tbl.database == db) &
+                            (tbl.scope == 'generic')
+                        ]
 
-                        self._resources_dict[db]["queries"][query_type] = {
-                            "generic_categories": sorted(
+                        self._resources_dict[db]['queries'][query_type] = {
+                            'generic_categories': sorted(
                                 set(tbl_db.category),
                             ),
                         }
 
                     else:
 
-                        self._resources_dict[db]["queries"][query_type] = {}
+                        self._resources_dict[db]['queries'][query_type] = {}
 
             self.args_reference[query_type][argname] = values
 
         self._resources_dict = dict(self._resources_dict)
 
-        _log("Finished updating resource information.")
+        _log('Finished updating resource information.')
+
 
     def _clean_args(self, args: dict) -> dict:
         """
@@ -1059,12 +1055,17 @@ class LegacyService:
             The clean dictionary of arguments ready to generate a query.
         """
 
-        args.pop("self", None)
-        kwargs = args.pop("kwargs", {})
-        args = {k: self._maybe_bool(v) for k, v in args.items() if v is not None}
-        args["format"] = self._ensure_str(args.get("format"))
+        args.pop('self', None)
+        kwargs = args.pop('kwargs', {})
+        args = {
+            k: self._maybe_bool(v)
+            for k, v in args.items()
+            if v is not None
+        }
+        args['format'] = self._ensure_str(args.get('format'))
 
         return args
+
 
     def _maybe_bool(self, val: Any) -> Any:
         """
@@ -1086,6 +1087,7 @@ class LegacyService:
 
         return val
 
+
     @staticmethod
     def _ensure_str(val: str | Iterable[str] | None = None) -> str | None:
         """
@@ -1100,6 +1102,7 @@ class LegacyService:
         """
 
         return _misc.first(_misc.to_list(val))
+
 
     @staticmethod
     def _ensure_array(val: Any | Iterable[Any]) -> list[Any]:
@@ -1120,9 +1123,10 @@ class LegacyService:
 
         elif isinstance(val, str):
 
-            val = val.split(",")
+            val = val.split(',')
 
         return _misc.to_list(val)
+
 
     def _array_args(self, args: dict, query_type: str) -> dict:
         """
@@ -1141,13 +1145,15 @@ class LegacyService:
             be in the right format.
         """
 
-        array_args = self.query_param[query_type].get("array_args", set())
+        array_args = self.query_param[query_type].get('array_args', set())
 
         args = {
-            k: self._ensure_array(v) if k in array_args else v for k, v in args.items()
+            k: self._ensure_array(v) if k in array_args else v
+            for k, v in args.items()
         }
 
         return args
+
 
     def _check_args(self, args: dict, query_type: str):
         """
@@ -1165,9 +1171,9 @@ class LegacyService:
         result = []
 
         ref = (
-            self.args_reference["resources"]
-            if query_type == "databases"
-            else self.args_reference[query_type]
+            self.args_reference['resources']
+                if query_type == 'databases' else
+            self.args_reference[query_type]
         )
 
         for arg, val in args.items():
@@ -1187,43 +1193,53 @@ class LegacyService:
                 if unknowns:
 
                     result.append(
-                        " ==> Unknown values for argument `{}`: `{}`".format(
+                        ' ==> Unknown values for argument `{}`: `{}`'.format(
                             arg,
-                            ", ".join(str(u) for u in unknowns),
+                            ', '.join(str(u) for u in unknowns),
                         ),
                     )
 
             else:
 
-                result.append(" ==> Unknown argument: `%s`" % arg)
+                result.append(' ==> Unknown argument: `%s`' % arg)
 
-        args["header"] = self._parse_bool_arg(args.get("header", True))
+        args['header'] = self._parse_bool_arg(args.get('header', True))
 
         if result:
 
             return (
-                "Something is not entirely good:\n%s\n\n"
-                "Please check the examples at\n"
-                "https://github.com/saezlab/pypath\n"
-                "and\n"
-                "https://github.com/saezlab/DoRothEA\n"
-                "If you still experiencing issues contact us at\n"
-                "https://github.com/saezlab/pypath/issues"
-                "" % "\n".join(result)
+                'Something is not entirely good:\n%s\n\n'
+                'Please check the examples at\n'
+                'https://github.com/saezlab/pypath\n'
+                'and\n'
+                'https://github.com/saezlab/DoRothEA\n'
+                'If you still experiencing issues contact us at\n'
+                'https://github.com/saezlab/pypath/issues'
+                '' % '\n'.join(result)
             )
+
 
     def queries(self, req):
 
-        query_type = req.postpath[1] if len(req.postpath) > 1 else "interactions"
+        query_type = (
+            req.postpath[1]
+                if len(req.postpath) > 1 else
+            'interactions'
+        )
 
         query_type = self._query_type(query_type)
 
-        query_param = req.postpath[2] if len(req.postpath) > 2 else None
+        query_param = (
+            req.postpath[2]
+                if len(req.postpath) > 2 else
+            None
+        )
 
         if query_type in self.args_reference:
 
             result = {
-                k: sorted(v) if isinstance(v, _const.LIST_LIKE) else v
+                    k:
+                    sorted(v) if isinstance(v, _const.LIST_LIKE) else v
                 for k, v in self.args_reference[query_type].items()
             }
 
@@ -1235,56 +1251,69 @@ class LegacyService:
 
             result = {}
             result[query_type] = (
-                "No possible arguments defined for"
-                "query `%s` or no such query available." % query_type
+                'No possible arguments defined for'
+                'query `%s` or no such query available.' % query_type
             )
 
         result = self._dict_set_to_list(result)
 
-        if b"format" in req.args and req.args["format"][0] == b"json":
+        if b'format' in req.args and req.args['format'][0] == b'json':
 
             return json.dumps(result)
 
         else:
 
-            return "argument\tvalues\n%s" % "\n".join(
-                "{}\t{}".format(
+            return 'argument\tvalues\n%s' % '\n'.join(
+                '{}\t{}'.format(
                     k,
-                    ";".join(v) if isinstance(v, (list, set, tuple)) else str(v),
+                    ';'.join(v)
+                        if isinstance(v, (list, set, tuple)) else
+                    str(v),
                 )
                 for k, v in result.items()
             )
+
 
     @classmethod
     def _dict_set_to_list(cls, dct):
 
         return {
-            key: (
-                sorted(val)
-                if isinstance(val, _const.LIST_LIKE)
-                else cls._dict_set_to_list(val)
-                if isinstance(val, dict)
-                else val
-            )
+                key:
+                (
+                    sorted(val)
+                        if isinstance(val, _const.LIST_LIKE) else
+                    cls._dict_set_to_list(val)
+                        if isinstance(val, dict) else
+                    val
+                )
             for key, val in dct.items()
         }
 
+
     def databases(self, req):
 
-        query_type = req.postpath[1] if len(req.postpath) > 1 else "interactions"
+        query_type = (
+            req.postpath[1]
+                if len(req.postpath) > 1 else
+            'interactions'
+        )
 
         query_type = self._query_type(query_type)
 
-        datasets = set(req.postpath[2].split(",")) if len(req.postpath) > 2 else None
+        datasets = (
+            set(req.postpath[2].split(','))
+                if len(req.postpath) > 2 else
+            None
+        )
 
         tbl = (
             self.data[query_type]
-            if query_type in self.data
-            else self.data["interactions"]
+                if query_type in self.data else
+            self.data['interactions']
         )
 
         # filter for datasets
-        if query_type == "interactions":
+        if query_type == 'interactions':
 
             if datasets is not None:
 
@@ -1307,27 +1336,33 @@ class LegacyService:
         else:
 
             result = {}
-            result["*"] = sorted(set.union(*tbl.set_sources))
+            result['*'] = sorted(set.union(*tbl.set_sources))
 
-        if b"format" in req.args and req.args["format"][0] == b"json":
+        if b'format' in req.args and req.args['format'][0] == b'json':
 
             return json.dumps(result)
 
         else:
 
-            return "dataset\tresources\n%s" % "\n".join(
-                "{}\t{}".format(k, ";".join(v)) for k, v in result.items()
+            return 'dataset\tresources\n%s' % '\n'.join(
+                '{}\t{}'.format(k, ';'.join(v)) for k, v in result.items()
             )
+
 
     def _get_datasets(self):
 
-        return list(self.data["interactions"].type.unique())
+        return list(self.data['interactions'].type.unique())
+
 
     def datasets(self, req):
 
-        query_type = req.postpath[1] if len(req.postpath) > 1 else "interactions"
+        query_type = (
+            req.postpath[1]
+                if len(req.postpath) > 1 else
+            'interactions'
+        )
 
-        if query_type == "interactions":
+        if query_type == 'interactions':
 
             result = self._get_datasets()
 
@@ -1335,13 +1370,14 @@ class LegacyService:
 
             result = []
 
-        if b"format" in req.args and req.args["format"][0] == b"json":
+        if b'format' in req.args and req.args['format'][0] == b'json':
 
             return json.dumps(result)
 
         else:
 
-            return ";".join(result)
+            return ';'.join(result)
+
 
     def _schema(self, query_type: str) -> ReadOnlyColumnCollection:
         """
@@ -1358,6 +1394,7 @@ class LegacyService:
 
         return getattr(_schema, query_type.capitalize())
 
+
     def _columns(self, query_type: str) -> list[str]:
         """
         Retrieve the list of columns of a given database as defined in its
@@ -1373,11 +1410,12 @@ class LegacyService:
 
         return self._schema(query_type).__table__.columns
 
+
     def _where_op(
-        self,
-        col: InstrumentedAttribute | Column,
-        val: Any,
-        op: str | None = None,
+            self,
+            col: InstrumentedAttribute | Column,
+            val: Any,
+            op: str | None = None,
     ) -> str:
         """
         Infers the SQL operator for the `WHERE` clause based on column and value
@@ -1400,41 +1438,42 @@ class LegacyService:
         # we can simplify this later, once we are sure
         # it's fully correct
 
-        if op is None:  # XXX: If not `None`, basically does nothing?
+        if op is None: # XXX: If not `None`, basically does nothing?
 
             if self._isarray(col):
 
                 if isinstance(val, _const.SIMPLE_TYPES):
 
                     # col in set[val]
-                    op = "in"
+                    op = 'in'
                     val = any_(array(val))
 
                 else:
 
                     # col.any_(val)
-                    op = "&&"
+                    op = '&&'
 
             elif val is True:
-                op = "IS"
+                op = 'IS'
 
             elif val is False:
-                op = "NOT"
+                op = 'NOT'
 
             elif isinstance(val, _const.SIMPLE_TYPES):
 
                 # col.val == val.val
                 # Note: this covers BOOL columns, despite
                 # there the operator is redundant
-                op = "="
+                op = '='
 
             else:
 
                 # col.val in set[val]
-                op = "="
+                op = '='
                 val = any_(array(val))
 
         return op, val
+
 
     def _isarray(self, col: InstrumentedAttribute) -> bool:
         """
@@ -1449,6 +1488,7 @@ class LegacyService:
         """
 
         return col.type.python_type is list
+
 
     def _where(self, query: Query, args: dict, query_type: str) -> Query:
         """
@@ -1468,8 +1508,8 @@ class LegacyService:
             to the arguments.
         """
 
-        param = self.query_param[query_type].get("where", {})
-        synonyms = self.query_param[query_type].get("where_synonyms", {})
+        param = self.query_param[query_type].get('where', {})
+        synonyms = self.query_param[query_type].get('where_synonyms', {})
         columns = self._columns(query_type)
 
         # Adding WHERE clauses
@@ -1485,12 +1525,12 @@ class LegacyService:
 
                 where_expr = []
 
-                for col in cols.split(":"):
+                for col in cols.split(':'):
 
                     col = columns[col]
                     op, value = self._where_op(col, value, op[0])
 
-                    if op == "NOT":
+                    if op == 'NOT':
 
                         expr = not_(col)
 
@@ -1503,6 +1543,7 @@ class LegacyService:
                 query = query.filter(or_(*where_expr))
 
         return query
+
 
     def _select(self, args: dict, query_type: str) -> Query:
         """
@@ -1521,13 +1562,17 @@ class LegacyService:
         """
 
         param = self.query_param[query_type]
-        synonyms = param.get("select", {})
-        cols = param.get("select_default", set())
+        synonyms = param.get('select', {})
+        cols = param.get('select_default', set())
         tbl = self._schema(query_type)
         query_fields = set()
 
-        fields_arg = set(self._parse_arg(args.get("fields", None)))
-        fields_arg |= {f for f in param.get("select_args", set()) if args.get(f, False)}
+        fields_arg = set(self._parse_arg(args.get('fields', None)))
+        fields_arg |= {
+            f
+            for f in param.get('select_args', set())
+            if args.get(f, False)
+        }
 
         for query_field in fields_arg:
 
@@ -1537,11 +1582,12 @@ class LegacyService:
         select = [
             c
             for c in tbl.__table__.columns
-            if c.name != "id" and (not cols or c.name in cols)
+            if c.name != 'id' and (not cols or c.name in cols)
         ]
 
         # Instance of sqlalchemy.orm.Query
         return self.con.session.query(*select)
+
 
     def _limit(self, query: Query, args: dict) -> Query:
         """
@@ -1560,17 +1606,18 @@ class LegacyService:
             to the arguments.
         """
 
-        if "limit" in args:
+        if 'limit' in args:
 
-            query = query.limit(self._parse_arg(args["limit"], typ=int))
+            query = query.limit(self._parse_arg(args['limit'], typ = int))
 
         return query
 
+
     def _query(
-        self,
-        args: dict,
-        query_type: str,
-        extra_where: Iterable | None = None,
+            self,
+            args: dict,
+            query_type: str,
+            extra_where: Iterable | None = None,
     ) -> tuple[Query | None, str | None]:
         """
         Generates the SQL query based on the request arguments.
@@ -1595,9 +1642,9 @@ class LegacyService:
         if not bad_req:
 
             # TODO: introduce systematic solution for synonyms
-            if "databases" in args:
+            if 'databases' in args:
 
-                args["resources"] = args["databases"]
+                args['resources'] = args['databases']
 
             query = self._select(args, query_type)
             query = self._where(query, args, query_type)
@@ -1613,6 +1660,7 @@ class LegacyService:
             # tbl = self._filter_by_license_complexes(tbl, license)
 
         return query, bad_req
+
 
     # XXX: args not used, remove?
     def _execute(self, query: Query, args: dict) -> GEN_OF_TUPLES:
@@ -1633,18 +1681,19 @@ class LegacyService:
 
             yield tuple(row)
 
+
     def _request(
-        self,
-        args: dict,
-        query_type: str,
-        extra_where: Iterable | None = None,
-        format: FORMATS | None = None,
-        header: bool | None = None,
-        postprocess: Callable[[tuple], tuple] | None = None,
-        postformat: Callable[[str], str] | None = None,
-        precontent: Iterable[str] | None = None,
-        postcontent: Iterable[str] | None = None,
-        **kwargs,
+            self,
+            args: dict,
+            query_type: str,
+            extra_where: Iterable | None = None,
+            format: FORMATS | None = None,
+            header: bool | None = None,
+            postprocess: Callable[[tuple], tuple] | None = None,
+            postformat: Callable[[str], str] | None = None,
+            precontent: Iterable[str] | None = None,
+            postcontent: Iterable[str] | None = None,
+            **kwargs,
     ) -> Generator[tuple | str | dict, None, None]:
         """
         Generic request, each request should call this. Implements the
@@ -1688,10 +1737,10 @@ class LegacyService:
         args = self._clean_args(args)
         args = self._array_args(args, query_type)
         query, bad_req = self._query(args, query_type, extra_where=extra_where)
-        colnames = ["no_column_names"]
-        format = format or args.pop("format", None) or "tsv"
+        colnames = ['no_column_names']
+        format = format or args.pop('format', None) or 'tsv'
 
-        if format == "query":
+        if format == 'query':
             result = ((query,),)
 
         elif query:
@@ -1707,9 +1756,9 @@ class LegacyService:
 
             result = ((bad_req,),)
 
-        header = args.get("header", True) if header is None else header
-        names = colnames if header or format in {"raw", "json"} else None
-        result = self._format(result, format=format, names=names)
+        header = args.get('header', True) if header is None else header
+        names = colnames if header or format in {'raw', 'json'} else None
+        result = self._format(result, format = format, names = names)
 
         if query and callable(postformat):
 
@@ -1720,11 +1769,12 @@ class LegacyService:
 
         yield from itertools.chain(precontent, result, postcontent)
 
+
     def _format(
-        self,
-        result: GEN_OF_TUPLES,
-        format: FORMATS = "raw",
-        names: list[str] | None = None,
+            self,
+            result: GEN_OF_TUPLES,
+            format: FORMATS = 'raw',
+            names: list[str] | None = None,
     ) -> GEN_OF_TUPLES:
         """
         Formats the result as Python generator, TSV or JSON.
@@ -1744,18 +1794,18 @@ class LegacyService:
 
         formatter = lambda x: x
 
-        if format == "raw":
+        if format == 'raw':
 
             if names:
 
-                record = collections.namedtuple("Record", names)
+                record = collections.namedtuple('Record', names)
                 formatter = lambda x: record(*x)
 
             for rec in result:
 
                 yield formatter(rec)
 
-        elif format == "json":
+        elif format == 'json':
 
             if names:
 
@@ -1765,7 +1815,7 @@ class LegacyService:
 
                 yield json.dumps(formatter(rec))
 
-        elif format == "query":
+        elif format == 'query':
 
             yield from result
 
@@ -1781,6 +1831,7 @@ class LegacyService:
 
                 yield formatter(rec)
 
+
     @classmethod
     def _table_formatter(cls, rec: tuple) -> str:
         """
@@ -1794,7 +1845,8 @@ class LegacyService:
             The entry formatted as tab-separated text.
         """
 
-        return "\t".join(cls._table_field_formatter(f) for f in rec) + "\n"
+        return '\t'.join(cls._table_field_formatter(f) for f in rec) + '\n'
+
 
     @staticmethod
     def _table_field_formatter(field: Any) -> str:
@@ -1810,12 +1862,13 @@ class LegacyService:
         """
 
         return (
-            ";".join(field)
-            if isinstance(field, _const.LIST_LIKE)
-            else json.dumps(field)
-            if isinstance(field, dict)
-            else str(field)
+            ';'.join(field)
+                if isinstance(field, _const.LIST_LIKE) else
+            json.dumps(field)
+                if isinstance(field, dict) else
+            str(field)
         )
+
 
     def _interactions_defaults(self, args: dict) -> dict:
         """
@@ -1837,45 +1890,46 @@ class LegacyService:
 
         in_args = lambda k: args.get(k, [])
 
-        if not in_args("resources") and not in_args("datasets"):
+        if not in_args('resources') and not in_args('datasets'):
 
-            if not in_args("types") or "post_translational" in in_args("types"):
+            if not in_args('types') or 'post_translational' in in_args('types'):
 
-                args["datasets"] = ["omnipath"]
+                args['datasets'] = ['omnipath']
 
-            if "transcriptional" in in_args("types"):
+            if 'transcriptional' in in_args('types'):
 
-                args["datasets"] = in_args("datasets") + ["collectri"]
+                args['datasets'] = in_args('datasets') + ['collectri']
 
-        if "dorothea" in in_args("datasets") and not in_args("dorothea_levels"):
+        if 'dorothea' in in_args('datasets') and not in_args('dorothea_levels'):
 
-            args["dorothea_levels"] = {"A", "B"}
+            args['dorothea_levels'] = {'A', 'B'}
 
         return args
 
+
     def interactions(
-        self,
-        resources: list[str] | None = None,
-        partners: list[str] | None = None,
-        sources: list[str] | None = None,
-        targets: list[str] | None = None,
-        fields: list[str] | None = None,
-        limit: int | None = None,
-        format: FORMATS | None = None,
-        source_target: Literal["OR", "AND"] = "OR",
-        organisms: Collection[str | ORGANISMS] | None = None,
-        datasets: Collection[INTERACTION_DATASETS] | None = None,
-        dorothea_levels: Collection[DOROTHEA_LEVELS] | None = None,
-        dorothea_methods: Collection[DOROTHEA_METHODS] | None = None,
-        types: Collection[INTERACTION_TYPES] | None = None,
-        directed: bool = True,
-        signed: bool = None,
-        loops: bool = False,
-        entity_types: Collection[ENTITY_TYPES] | None = None,
-        evidences: bool = False,
-        genesymbols: bool = False,
-        extra_attrs: bool = False,
-        **kwargs,
+            self,
+            resources: list[str] | None = None,
+            partners: list[str] | None = None,
+            sources: list[str] | None = None,
+            targets: list[str] | None = None,
+            fields: list[str] | None = None,
+            limit: int | None = None,
+            format: FORMATS | None = None,
+            source_target: Literal['OR', 'AND'] = 'OR',
+            organisms: Collection[str | ORGANISMS] | None  = None,
+            datasets: Collection[INTERACTION_DATASETS] | None  = None,
+            dorothea_levels: Collection[DOROTHEA_LEVELS] | None = None,
+            dorothea_methods: Collection[DOROTHEA_METHODS] | None = None,
+            types: Collection[INTERACTION_TYPES] | None = None,
+            directed: bool = True,
+            signed: bool = None,
+            loops: bool = False,
+            entity_types: Collection[ENTITY_TYPES] | None = None,
+            evidences: bool = False,
+            genesymbols: bool = False,
+            extra_attrs: bool = False,
+            **kwargs,
     ) -> Generator[tuple | str, None, None]:
         """
         Creates the generator of entries based on the query arguments for the
@@ -1945,28 +1999,29 @@ class LegacyService:
         organisms = organisms or {9606}
         args = locals()
         args = self._clean_args(args)
-        args = self._array_args(args, "interactions")
+        args = self._array_args(args, 'interactions')
 
         args = self._interactions_defaults(args)
 
-        extra_where = self._where_partners("interactions", args)
-        where_loops = self._where_loops("interactions", args)
-        where_bool = self._where_bool("interactions", args)
+        extra_where = self._where_partners('interactions', args)
+        where_loops = self._where_loops('interactions', args)
+        where_bool = self._where_bool('interactions', args)
 
-        _log(f"Args: {_misc.dict_str(args)}")
-        _log(f"Interactions where: {extra_where}, {where_bool}, {where_loops}")
+        _log(f'Args: {_misc.dict_str(args)}')
+        _log(f'Interactions where: {extra_where}, {where_bool}, {where_loops}')
 
         yield from self._request(
             args,
-            query_type="interactions",
-            extra_where=[extra_where, where_bool, where_loops],
+            query_type = 'interactions',
+            extra_where = [extra_where, where_bool, where_loops],
             **kwargs,
         )
 
+
     def _where_bool(
-        self,
-        query_type: str,
-        args: dict,
+            self,
+            query_type: str,
+            args: dict,
     ) -> BooleanClauseList | None:
         """
         Generates WHERE statement(s) of a boolean variable(s).
@@ -1983,7 +2038,7 @@ class LegacyService:
 
         def _override(col):
 
-            if arg_col := override.get(col):
+            if (arg_col := override.get(col)):
 
                 expr = []
 
@@ -2008,11 +2063,12 @@ class LegacyService:
 
             return expr
 
-        override = self.query_param[query_type].get("where_bool_override", {})
+
+        override = self.query_param[query_type].get('where_bool_override', {})
         in_override = {arg for key in override.values() for arg in key.keys()}
         override_expr = {}
 
-        bool_args = self.query_param[query_type].get("where_bool", {})
+        bool_args = self.query_param[query_type].get('where_bool', {})
         columns = self._columns(query_type)
 
         where = []
@@ -2026,7 +2082,7 @@ class LegacyService:
                 arg_cols = {cols.get(x, x) for x in arg_cols}
                 cols = set(cols.values())
 
-            if cols := arg_cols & cols:
+            if (cols := arg_cols & cols):
 
                 expr = or_(*(_override(col) for col in cols))
 
@@ -2040,22 +2096,23 @@ class LegacyService:
 
         return and_(*where)
 
+
     def enzsub(
-        self,
-        resources: list[str] | None = None,
-        partners: list[str] | None = None,
-        enzymes: list[str] | None = None,
-        substrates: list[str] | None = None,
-        types: list[str] | None = None,
-        residues: list[str] | None = None,
-        fields: list[str] | None = None,
-        limit: int | None = None,
-        format: FORMATS | None = None,
-        enzyme_substrate="OR",
-        organisms: Collection[int | str] | None = None,
-        loops: bool = False,
-        genesymbols: bool = False,
-        **kwargs,
+            self,
+            resources: list[str] | None = None,
+            partners: list[str] | None = None,
+            enzymes: list[str] | None = None,
+            substrates: list[str] | None = None,
+            types: list[str] | None = None,
+            residues: list[str] | None = None,
+            fields: list[str] | None = None,
+            limit: int | None = None,
+            format: FORMATS | None = None,
+            enzyme_substrate = 'OR',
+            organisms: Collection[int | str] | None = None,
+            loops: bool = False,
+            genesymbols: bool = False,
+            **kwargs,
     ) -> Generator[tuple | str, None, None]:
         """
         Creates the generator of entries based on the query arguments for the
@@ -2106,22 +2163,24 @@ class LegacyService:
         organisms = organisms or {9606}
         args = locals()
         args = self._clean_args(args)
-        args = self._array_args(args, "enzsub")
-        where_loops = self._where_loops("enzsub", args)
-        extra_where = self._where_partners("enzsub", args)
+        args = self._array_args(args, 'enzsub')
+        where_loops = self._where_loops('enzsub', args)
+        extra_where = self._where_partners('enzsub', args)
 
-        _log(f"Args: {_misc.dict_str(args)}")
-        _log(f"Enzsub where: {extra_where}, {where_loops}")
+        _log(f'Args: {_misc.dict_str(args)}')
+        _log(f'Enzsub where: {extra_where}, {where_loops}')
 
         yield from self._request(
             args,
-            query_type="enzsub",
-            extra_where=[extra_where, where_loops],
+            query_type = 'enzsub',
+            extra_where = [extra_where, where_loops],
             **kwargs,
         )
 
+
     # Synonym
     enz_sub = enzsub
+
 
     def query(self, query_type: QUERY_TYPES, **kwargs) -> Query:
         """
@@ -2139,9 +2198,10 @@ class LegacyService:
             Instance of the SQLalchemy query object.
         """
 
-        kwargs["format"] = "query"
+        kwargs['format'] = 'query'
 
         return next(getattr(self, query_type)(**kwargs))[0]
+
 
     def query_str(self, query_type: QUERY_TYPES, **kwargs) -> str:
         """
@@ -2161,12 +2221,13 @@ class LegacyService:
 
         q_str = str(self.query(query_type, **kwargs))
 
-        return re.sub(r"\s+", " ", q_str)
+        return re.sub(r'\s+', ' ', q_str)
+
 
     def _where_loops(
-        self,
-        query_type: QUERY_TYPES,
-        args: dict,
+            self,
+            query_type: QUERY_TYPES,
+            args: dict,
     ) -> BooleanClauseList | None:
         """
         Generates WHERE statement for loops option.
@@ -2181,19 +2242,20 @@ class LegacyService:
             The loops variable WHERE clause.
         """
 
-        sides = self.query_param[query_type]["where_partners"]["sides"]
+        sides = self.query_param[query_type]['where_partners']['sides']
         columns = self._columns(query_type)
 
-        if not args.get("loops", False):
+        if not args.get('loops', False):
 
             cols = [columns[side] for side in sides.values()]
 
-            return cols[0].op("!=")(cols[1])
+            return cols[0].op('!=')(cols[1])
+
 
     def _where_partners(
-        self,
-        query_type: QUERY_TYPES,
-        args: dict,
+            self,
+            query_type: QUERY_TYPES,
+            args: dict,
     ) -> BooleanClauseList | None:
         """
         Generates WHERE statement(s) that deal with filtering interactions by
@@ -2210,12 +2272,12 @@ class LegacyService:
             specified operator in `args` otherwise, defaults to and).
         """
 
-        sides = self.query_param[query_type]["where_partners"]["sides"]
-        query_op = self.query_param[query_type]["where_partners"]["operator"]
+        sides = self.query_param[query_type]['where_partners']['sides']
+        query_op = self.query_param[query_type]['where_partners']['operator']
 
         for side in sides:
 
-            args[side] = args.get(side, None) or args.get("partners", None)
+            args[side] = args.get(side, None) or args.get('partners', None)
 
         columns = self._columns(query_type)
 
@@ -2230,9 +2292,9 @@ class LegacyService:
 
                 continue
 
-            for suffix in ("", "_genesymbol"):
+            for suffix in ('', '_genesymbol'):
 
-                col = columns[f"{sidecol}{suffix}"]
+                col = columns[f'{sidecol}{suffix}']
                 op, val = self._where_op(col, args[side])
                 expr = col.op(op)(val)
                 conditions.append(expr)
@@ -2245,21 +2307,22 @@ class LegacyService:
 
         elif len(partners_where) == 2:
 
-            op = or_ if args[query_op].upper() == "OR" else and_
+            op = or_ if args[query_op].upper() == 'OR' else and_
 
             return op(*partners_where)
 
+
     def annotations(
-        self,
-        resources: list[str] | None = None,
-        proteins: list[str] | None = None,
-        entity_types: ENTITY_TYPES | None = None,
-        fields: list[str] | None = None,
-        limit: int | None = None,
-        format: FORMATS | None = None,
-        **kwargs,
+            self,
+            resources: list[str] | None = None,
+            proteins: list[str] | None = None,
+            entity_types: ENTITY_TYPES | None = None,
+            fields: list[str] | None = None,
+            limit: int | None = None,
+            format: FORMATS | None = None,
+            **kwargs,
     ) -> Generator[tuple | str, None, None]:
-        """
+        '''
         Creates the generator of entries based on the query arguments for the
         annotations service.
 
@@ -2288,25 +2351,26 @@ class LegacyService:
         Yields:
             The search results in the annotations database in the requested
             format.
-        """
+        '''
 
         args = locals()
         args = self._clean_args(args)
-        args = self._array_args(args, "annotations")
+        args = self._array_args(args, 'annotations')
 
-        _log(f"Args: {_misc.dict_str(args)}")
+        _log(f'Args: {_misc.dict_str(args)}')
 
         yield from self._request(
             args,
-            query_type="annotations",
+            query_type = 'annotations',
             **kwargs,
         )
 
+
     def annotations_summary(
-        self,
-        resources: list[str] | None = None,
-        cytoscape: bool = False,
-    ):
+            self, 
+            resources: list[str] | None = None,
+            cytoscape: bool = False,
+        ):
         """
         Generates the summary of the annotations database (i.e. list of unique
         source, label, value triplets).
@@ -2314,28 +2378,30 @@ class LegacyService:
 
         args = locals()
         args = self._clean_args(args)
-        args = self._array_args(args, "annotations")
-
-        renum = re.compile(r"[-\d\.]+")
-
+        args = self._array_args(args, 'annotations')
+        
+        renum = re.compile(r'[-\d\.]+')
+        
         summary = {
             (
-                row[:-1] + ("<numeric>",)
+                row[:-1] + ('<numeric>', )
                 if all([re.match(renum, val) for val in row[-1]])
-                else row[:-1] + ("#".join(row[-1]),)
+                else row[:-1] + ('#'.join(row[-1]), )
             )
             for row in self._preprocess_annotations()
         }
 
-        if "resources" in args:
-
-            summary = {row for row in summary if row[0] in args["resources"]}
-
-        if args["cytoscape"] == "true":  # TODO: Check if working and fix
+        if 'resources' in args:
 
             summary = {
-                row
-                for row in summary
+                row for row in summary
+                if row[0] in args['resources']
+            }
+        
+        if args['cytoscape'] == 'true': # TODO: Check if working and fix
+            
+            summary = {
+                row for row in summary
                 if (
                     row[0] in self.cytoscape_attributes.keys()
                     and row[1] in self.cytoscape_attributes.values()
@@ -2343,6 +2409,7 @@ class LegacyService:
             }
 
         return summary
+
 
     def old_annotations_summary(self, req):
 
@@ -2352,23 +2419,26 @@ class LegacyService:
 
             return bad_req
 
-        if b"databases" in req.args:
+        if b'databases' in req.args:
 
-            req.args["resources"] = req.args["databases"]
+            req.args['resources'] = req.args['databases']
 
         # starting from the entire dataset
-        tbl = self.data["annotations_summary"]
+        tbl = self.data['annotations_summary']
 
         hdr = tbl.columns
 
         # filtering for resources
-        if b"resources" in req.args:
+        if b'resources' in req.args:
 
-            resources = self._args_set(req, "resources")
+            resources = self._args_set(req, 'resources')
 
             tbl = tbl.loc[tbl.source.isin(resources)]
 
-        if b"cytoscape" in req.args and self._parse_bool_arg(req.args["cytoscape"]):
+        if (
+            b'cytoscape' in req.args and
+            self._parse_bool_arg(req.args['cytoscape'])
+        ):
 
             cytoscape = True
 
@@ -2376,50 +2446,53 @@ class LegacyService:
 
             cytoscape = False
 
-        tbl = tbl.loc[:, hdr]
+        tbl = tbl.loc[:,hdr]
 
         if cytoscape:
 
-            tbl = tbl.set_index(["source", "label"], drop=False)
+            tbl = tbl.set_index(['source', 'label'], drop = False)
 
             cytoscape_keys = {
                 (source, label)
                 for source, labels in self.cytoscape_attributes
-                for label in (labels if isinstance(labels, tuple) else (labels,))
+                for label in (
+                    labels if isinstance(labels, tuple) else (labels,)
+                )
             } & set(tbl.index)
 
             tbl = tbl.loc[list(cytoscape_keys)]
 
         return self._serve_dataframe(tbl, req)
 
+
     # TODO: Revisit handling of long/short synonym arguments
     # TODO: Addd missing causality and topology
     def intercell(
-        self,
-        resources: list[str] | None = None,
-        proteins: list[str] | None = None,
-        entity_types: ENTITY_TYPES | None = None,
-        aspect: list[str] | None = None,
-        scope: list[str] | None = None,
-        source: list[str] | None = None,
-        categories: list[str] | None = None,
-        parent: list[str] | None = None,
-        transmitter: bool | None = None,
-        trans: bool | None = None,  # Synonym
-        receiver: bool | None = None,
-        rec: bool | None = None,  # Synonym
-        secreted: bool | None = None,
-        sec: bool | None = None,  # Synonym
-        plasma_membrane_transmembrane: bool | None = None,
-        pmtm: bool | None = None,  # Synonym
-        plasma_membrane_peripheral: bool | None = None,
-        pmp: bool | None = None,  # Synonym
-        fields: list[str] | None = None,
-        limit: int | None = None,
-        format: FORMATS | None = None,
-        **kwargs,
+            self,
+            resources: list[str] | None = None,
+            proteins: list[str] | None = None,
+            entity_types: ENTITY_TYPES | None = None,
+            aspect: list[str] | None = None,
+            scope: list[str] | None = None,
+            source: list[str] | None = None,
+            categories: list[str] | None = None,
+            parent: list[str] | None = None,
+            transmitter: bool | None = None,
+            trans: bool | None = None, # Synonym
+            receiver: bool | None = None,
+            rec: bool | None = None, # Synonym
+            secreted: bool | None = None,
+            sec: bool | None = None, # Synonym
+            plasma_membrane_transmembrane: bool | None = None,
+            pmtm: bool | None = None, # Synonym
+            plasma_membrane_peripheral: bool | None = None,
+            pmp: bool | None = None, # Synonym
+            fields: list[str] | None = None,
+            limit: int | None = None,
+            format: FORMATS | None = None,
+            **kwargs,
     ) -> Generator[tuple | str, None, None]:
-        """
+        '''
         Creates the generator of entries based on the query arguments for the
         intercell service.
 
@@ -2486,19 +2559,20 @@ class LegacyService:
         Yields:
             The search results in the intercell database in the requested
             format.
-        """
+        '''
 
         args = locals()
         args = self._clean_args(args)
-        args = self._array_args(args, "intercell")
+        args = self._array_args(args, 'intercell')
 
-        _log(f"Args: {_misc.dict_str(args)}")
+        _log(f'Args: {_misc.dict_str(args)}')
 
         yield from self._request(
             args,
-            query_type="intercell",
+            query_type = 'intercell',
             **kwargs,
         )
+
 
     # XXX: Deprecated?
     def intercell_summary(self, req):
@@ -2509,51 +2583,52 @@ class LegacyService:
 
             return bad_req
 
-        if b"databases" in req.args:
+        if b'databases' in req.args:
 
-            req.args["resources"] = req.args["databases"]
+            req.args['resources'] = req.args['databases']
 
         # starting from the entire dataset
-        tbl = self.data["intercell_summary"]
+        tbl = self.data['intercell_summary']
 
         hdr = tbl.columns
 
         # filtering for category types
         for var in (
-            "aspect",
-            "source",
-            "scope",
-            "transmitter",
-            "receiver",
-            "parent",
-            "resources",
+            'aspect',
+            'source',
+            'scope',
+            'transmitter',
+            'receiver',
+            'parent',
+            'resources',
         ):
 
-            if var.encode("ascii") in req.args:
+            if var.encode('ascii') in req.args:
 
                 values = self._args_set(req, var)
 
                 tbl = tbl.loc[getattr(tbl, var).isin(values)]
 
         # filtering for categories
-        if b"categories" in req.args:
+        if b'categories' in req.args:
 
-            categories = self._args_set(req, "categories")
+            categories = self._args_set(req, 'categories')
 
             tbl = tbl.loc[tbl.category.isin(categories)]
 
-        tbl = tbl.loc[:, hdr]
+        tbl = tbl.loc[:,hdr]
 
         return self._serve_dataframe(tbl, req)
 
+
     def complexes(
-        self,
-        resources: list[str] | None = None,
-        proteins: list[str] | None = None,
-        fields: list[str] | None = None,
-        limit: int | None = None,
-        format: FORMATS | None = None,
-        **kwargs,
+            self,
+            resources: list[str] | None = None,
+            proteins: list[str] | None = None,
+            fields: list[str] | None = None,
+            limit: int | None = None,
+            format: FORMATS | None = None,
+            **kwargs,
     ) -> Generator[tuple | str, None, None]:
         """
         Creates the generator of entries based on the query arguments for the
@@ -2585,17 +2660,22 @@ class LegacyService:
 
         args = locals()
 
-        yield from self._request(args, "complexes", **kwargs)
+        yield from self._request(args, 'complexes', **kwargs)
+
 
     def resources(self, req):
 
         datasets = (
+
             {
-                self._query_type(dataset.decode("ascii"))
-                for dataset in req.args["datasets"]
+                self._query_type(dataset.decode('ascii'))
+                for dataset in req.args['datasets']
             }
-            if b"datasets" in req.args
-            else None
+
+            if b'datasets' in req.args else
+
+            None
+
         )
 
         res_ctrl = resources_mod.get_controller()
@@ -2606,72 +2686,87 @@ class LegacyService:
                 k: v
                 for k, v in self._resources_dict.items()
                 if (
-                    res_ctrl.license(k).enables(license)
-                    and (not datasets or datasets & set(v["datasets"].keys()))
+                    res_ctrl.license(k).enables(license) and
+                    (
+                        not datasets or
+                        datasets & set(v['datasets'].keys())
+                    )
                 )
             },
         )
+
 
     # XXX: Deprecated?
     @classmethod
     def _filter_by_license_complexes(cls, tbl, license):
 
         return cls._filter_by_license(
-            tbl=tbl,
-            license=license,
-            res_col="sources",
-            simple=False,
-            prefix_col="identifiers",
+            tbl = tbl,
+            license = license,
+            res_col = 'sources',
+            simple = False,
+            prefix_col = 'identifiers',
         )
+
 
     # XXX: Deprecated?
     @classmethod
     def _filter_by_license_interactions(cls, tbl, license):
 
         return cls._filter_by_license(
-            tbl=tbl,
-            license=license,
-            res_col="sources",
-            simple=False,
-            prefix_col="references",
+            tbl = tbl,
+            license = license,
+            res_col = 'sources',
+            simple = False,
+            prefix_col = 'references',
         )
+
 
     # XXX: Deprecated?
     @classmethod
     def _filter_by_license_annotations(cls, tbl, license):
 
         return cls._filter_by_license(
-            tbl=tbl,
-            license=license,
-            res_col="source",
-            simple=True,
+            tbl = tbl,
+            license = license,
+            res_col = 'source',
+            simple = True,
         )
+
 
     # XXX: Deprecated?
     @classmethod
     def _filter_by_license_intercell(cls, tbl, license):
 
         return cls._filter_by_license(
-            tbl=tbl,
-            license=license,
-            res_col="database",
-            simple=True,
+            tbl = tbl,
+            license = license,
+            res_col = 'database',
+            simple = True,
         )
+
 
     # XXX: Deprecated?
     @staticmethod
     def _filter_by_license(
-        tbl,
-        license,
-        res_col,
-        simple=False,
-        prefix_col=None,
+            tbl,
+            license,
+            res_col,
+            simple = False,
+            prefix_col = None,
     ):
+
         def filter_resources(res):
 
-            res = {r for r in res if res_ctrl.license(r).enables(license)}
+            res = {
+                r for r in res
+                if res_ctrl.license(r).enables(license)
+            }
 
-            composite = [r for r in res if res_ctrl.license(r).name == "Composite"]
+            composite = [
+                r for r in res
+                if res_ctrl.license(r).name == 'Composite'
+            ]
 
             if composite:
 
@@ -2685,6 +2780,7 @@ class LegacyService:
 
             return res
 
+
         if license == LICENSE_IGNORE or tbl.shape[0] == 0:
 
             return tbl
@@ -2695,30 +2791,46 @@ class LegacyService:
 
         if simple:
 
-            bool_idx = [res_ctrl.license(res).enables(license) for res in _res_col]
+            bool_idx = [
+                res_ctrl.license(res).enables(license)
+                for res in _res_col
+            ]
 
         else:
 
             _set_res_col = tbl.set_sources
 
-            _res_to_keep = [filter_resources(ress) for ress in _set_res_col]
+            _res_to_keep = [
+                filter_resources(ress)
+                for ress in _set_res_col
+            ]
 
-            tbl[res_col] = [";".join(sorted(ress)) for ress in _res_to_keep]
+            tbl[res_col] = [
+                ';'.join(sorted(ress))
+                for ress in _res_to_keep
+            ]
 
             if prefix_col:
 
                 _prefix_col = getattr(tbl, prefix_col)
 
                 _new_prefix_col = [
-                    ";".join(
+
+                    ';'.join(
                         sorted(
                             pref_res
-                            for pref_res in pref_ress.split(";")
-                            if (pref_res.split(":", maxsplit=1)[0] in _res_to_keep[i])
+                            for pref_res in pref_ress.split(';')
+                            if (
+                                pref_res.split(':', maxsplit = 1)[0] in
+                                _res_to_keep[i]
+                            )
                         ),
                     )
-                    if isinstance(pref_ress, str)
-                    else pref_ress
+
+                        if isinstance(pref_ress, str) else
+
+                    pref_ress
+
                     for i, pref_ress in enumerate(_prefix_col)
                 ]
 
@@ -2729,6 +2841,7 @@ class LegacyService:
         tbl = tbl.loc[bool_idx]
 
         return tbl
+
 
     def _parse_arg(self, arg: Any, typ: type = None) -> Any:
         """
@@ -2767,11 +2880,12 @@ class LegacyService:
 
                 arg = float(arg)
 
-            elif "," in arg:
+            elif ',' in arg:
 
-                arg = arg.split(",")
+                arg = arg.split(',')
 
         return arg
+
 
     def _parse_bool_arg(self, arg: Any) -> bool:
         """
@@ -2791,15 +2905,15 @@ class LegacyService:
 
             arg = arg[0]
 
-        if hasattr(arg, "decode"):
+        if hasattr(arg, 'decode'):
 
-            arg = arg.decode("utf-8")
+            arg = arg.decode('utf-8')
 
-        if hasattr(arg, "lower"):
+        if hasattr(arg, 'lower'):
 
             arg = arg.lower()
 
-        if hasattr(arg, "isdigit") and arg.isdigit():
+        if hasattr(arg, 'isdigit') and arg.isdigit():
 
             arg = int(arg)
 
