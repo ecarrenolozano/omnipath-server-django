@@ -1,0 +1,144 @@
+@swagger_auto_schema(
+    method="get",
+    operation_description="Retrieve a list of interactions. Supports filtering by source.",
+    manual_parameters=[
+        openapi.Parameter(
+            "source",
+            openapi.IN_QUERY,
+            description="Filter interactions by source",
+            type=openapi.TYPE_STRING,
+        ),
+        openapi.Parameter(
+            "fields",
+            openapi.IN_QUERY,
+            description="Comma-separated list of fields to return",
+            type=openapi.TYPE_STRING,
+        ),
+    ],
+    responses={200: InteractionsOmnipathSerializer(many=True)},
+)
+@swagger_auto_schema(
+    method="post",
+    operation_description="Create a new interaction",
+    request_body=InteractionsOmnipathSerializer,
+    responses={201: InteractionsOmnipathSerializer, 400: "Bad Request"},
+)
+@api_view(["GET", "POST"])
+def list_or_create_interactions(request):
+    """
+    Handles retrieving interactions dynamically based on query parameters (GET)
+    or creating a new interaction (POST).
+    """
+
+    if request.method == "POST":
+        return create_interaction(request)
+
+    return get_interactions(request)
+
+
+def get_interactions(request):
+    """Handles GET request for retrieving interactions with optional filtering and field selection."""
+    queryset = Interactions.objects.all()
+
+    # Apply filtering by source if provided
+    source_filter = request.query_params.get("source")
+    if source_filter:
+        queryset = queryset.filter(source__icontains=source_filter)
+
+    # Get selected fields from query parameters
+    selected_fields = request.query_params.get("fields")
+    selected_fields = selected_fields.split(",") if selected_fields else None
+
+    serializer = InteractionsOmnipathSerializer(
+        queryset, many=True, fields=selected_fields
+    )
+    return JsonResponse(serializer.data, safe=False)
+
+
+def create_interaction(request):
+    """Handles POST request for creating a new interaction."""
+    interaction_data = JSONParser().parse(request)
+    serializer = InteractionsOmnipathSerializer(data=interaction_data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+
+    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ----------------------------------------------------------------------------------
+@swagger_auto_schema(
+    method="get",
+    operation_description="Retrieve a specific interaction by its ID.",
+    responses={
+        200: InteractionsOmnipathSerializer,
+        404: "Not Found - Interaction does not exist",
+    },
+    manual_parameters=[
+        openapi.Parameter(
+            "pk",
+            openapi.IN_PATH,
+            description="ID of the interaction",
+            type=openapi.TYPE_INTEGER,
+        )
+    ],
+)
+@swagger_auto_schema(
+    method="delete",
+    operation_description="Delete a specific interaction by its ID.",
+    responses={
+        204: "No Content - Successfully deleted",
+        404: "Not Found - Interaction does not exist",
+    },
+    manual_parameters=[
+        openapi.Parameter(
+            "pk",
+            openapi.IN_PATH,
+            description="ID of the interaction",
+            type=openapi.TYPE_INTEGER,
+        )
+    ],
+)
+@swagger_auto_schema(
+    method="put",
+    operation_description="Update a specific interaction by its ID.",
+    request_body=InteractionsOmnipathSerializer,
+    responses={
+        200: InteractionsOmnipathSerializer,
+        400: "Bad Request - Invalid data",
+        404: "Not Found - Interaction does not exist",
+    },
+)
+@api_view(["GET", "PUT", "DELETE"])
+def interaction_detail(request, pk):
+    try:
+        interaction = Interactions.objects.get(pk=pk)
+    except Interactions.DoesNotExist:
+        return JsonResponse(
+            {"message": "The interaction does not exist"},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    if request.method == "GET":
+        interactions_omnipath_serializer = InteractionsOmnipathSerializer(interaction)
+        return JsonResponse(interactions_omnipath_serializer.data)
+
+    elif request.method == "PUT":
+        interactions_data = JSONParser().parse(request)
+        interactions_omnipath_serializer = InteractionsOmnipathSerializer(
+            interaction, data=interactions_data
+        )
+        if interactions_omnipath_serializer.is_valid():
+            interactions_omnipath_serializer.save()
+            return JsonResponse(interactions_omnipath_serializer.data)
+        return JsonResponse(
+            interactions_omnipath_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    elif request.method == "DELETE":
+        interaction.delete()
+        return JsonResponse(
+            {"message": "Country was deleted successfully!"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
