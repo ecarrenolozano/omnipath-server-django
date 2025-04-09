@@ -1,162 +1,96 @@
 import json
 
-from django.shortcuts import render
-from django.http.response import JsonResponse
 from django.http import StreamingHttpResponse
-from rest_framework.parsers import JSONParser
+from django.http.response import JsonResponse
+from django.shortcuts import render
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.parsers import JSONParser
 
 from api.models import Interactions
 from api.serializers import InteractionsOmnipathSerializer
-from rest_framework.decorators import api_view
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
+
+
+DEFAULT_INTERACTIONS_FIELDS = [
+    "source",
+    "target",
+    "is_directed",
+    "is_stimulation",
+    "is_inhibition",
+    "consensus_direction",
+    "consensus_stimulation",
+    "consensus_inhibition",
+    "type",
+]
 
 
 # ----------------------------------------------------------------
 # -------------------   INTERACTIONS  HANDLERS   -----------------
 # ----------------------------------------------------------------
-@swagger_auto_schema(
-    method="get",
-    operation_description="Retrieve a list of interactions. Supports filtering by source.",
-    manual_parameters=[
-        openapi.Parameter(
-            "source",
-            openapi.IN_QUERY,
-            description="Filter interactions by source",
-            type=openapi.TYPE_STRING,
-        ),
-        openapi.Parameter(
-            "fields",
-            openapi.IN_QUERY,
-            description="Comma-separated list of fields to return",
-            type=openapi.TYPE_STRING,
-        ),
-    ],
-    responses={200: InteractionsOmnipathSerializer(many=True)},
-)
-@swagger_auto_schema(
-    method="post",
-    operation_description="Create a new interaction",
-    request_body=InteractionsOmnipathSerializer,
-    responses={201: InteractionsOmnipathSerializer, 400: "Bad Request"},
-)
-@api_view(["GET", "POST"])
-def list_or_create_interactions(request):
+class InteractionListCreateView(APIView):
     """
-    Handles retrieving interactions dynamically based on query parameters (GET)
-    or creating a new interaction (POST).
+    View for retrieving and creating interactions. Supports filtering and field selection.
     """
 
-    if request.method == "POST":
-        return create_interaction(request)
-
-    return get_interactions(request)
-
-
-def get_interactions(request):
-    """Handles GET request for retrieving interactions with optional filtering and field selection."""
-    queryset = Interactions.objects.all()
-
-    # Apply filtering by source if provided
-    source_filter = request.query_params.get("source")
-    if source_filter:
-        queryset = queryset.filter(source__icontains=source_filter)
-
-    # Get selected fields from query parameters
-    selected_fields = request.query_params.get("fields")
-    selected_fields = selected_fields.split(",") if selected_fields else None
-
-    serializer = InteractionsOmnipathSerializer(
-        queryset, many=True, fields=selected_fields
+    @swagger_auto_schema(
+        operation_description="Retrieve a list of interactions. Supports fields selection",
+        manual_parameters=[
+            openapi.Parameter(
+                "dorothea_levels",
+                openapi.IN_QUERY,
+                description="Filter interactions by Dorothea levels",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "genesymbols",
+                openapi.IN_QUERY,
+                description="Filter interactions by genesymbols",
+                type=openapi.TYPE_STRING,
+            ),
+            openapi.Parameter(
+                "fields",
+                openapi.IN_QUERY,
+                description="Comma-separated list of fields to return",
+                type=openapi.TYPE_STRING,
+            ),
+        ],
+        responses={200: InteractionsOmnipathSerializer(many=True)},
     )
-    return JsonResponse(serializer.data, safe=False)
+    def get(self, request):
+        """
+        Handles GET request for retrieving interactions with field selection.
+        """
+        queryset = Interactions.objects.all()
 
+        # Get selected fields from query parameters
+        selected_fields = request.query_params.get("fields")
+        selected_fields = (
+            selected_fields.split(",")
+            if selected_fields
+            else DEFAULT_INTERACTIONS_FIELDS
+        )
 
-def create_interaction(request):
-    """Handles POST request for creating a new interaction."""
-    interaction_data = JSONParser().parse(request)
-    serializer = InteractionsOmnipathSerializer(data=interaction_data)
+        # Logic behind '?genesymbols'
+        genesymbols_parameter = request.query_params.get("genesymbols")
+        if genesymbols_parameter.lower() in {"1", "true"}:
+            selected_fields.extend(("source_genesymbol", "target_genesymbol"))
 
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        # Logic behind '?dorothea_levels'
+        dorothea_levels_parameter = request.query_params.get("dorothea_levels")
+        if dorothea_levels_parameter:
+            queryset = queryset.filter(
+                dorothea_level__icontains=dorothea_levels_parameter
+            )
+        print(dorothea_levels_parameter)
 
-    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Serialize the queryset
+        serializer = InteractionsOmnipathSerializer(
+            queryset, many=True, fields=selected_fields
+        )
+        return JsonResponse(serializer.data, safe=False)
 
 
 # ----------------------------------------------------------------------------------
-@swagger_auto_schema(
-    method="get",
-    operation_description="Retrieve a specific interaction by its ID.",
-    responses={
-        200: InteractionsOmnipathSerializer,
-        404: "Not Found - Interaction does not exist",
-    },
-    manual_parameters=[
-        openapi.Parameter(
-            "pk",
-            openapi.IN_PATH,
-            description="ID of the interaction",
-            type=openapi.TYPE_INTEGER,
-        )
-    ],
-)
-@swagger_auto_schema(
-    method="delete",
-    operation_description="Delete a specific interaction by its ID.",
-    responses={
-        204: "No Content - Successfully deleted",
-        404: "Not Found - Interaction does not exist",
-    },
-    manual_parameters=[
-        openapi.Parameter(
-            "pk",
-            openapi.IN_PATH,
-            description="ID of the interaction",
-            type=openapi.TYPE_INTEGER,
-        )
-    ],
-)
-@swagger_auto_schema(
-    method="put",
-    operation_description="Update a specific interaction by its ID.",
-    request_body=InteractionsOmnipathSerializer,
-    responses={
-        200: InteractionsOmnipathSerializer,
-        400: "Bad Request - Invalid data",
-        404: "Not Found - Interaction does not exist",
-    },
-)
-@api_view(["GET", "PUT", "DELETE"])
-def interaction_detail(request, pk):
-    try:
-        interaction = Interactions.objects.get(pk=pk)
-    except Interactions.DoesNotExist:
-        return JsonResponse(
-            {"message": "The interaction does not exist"},
-            status=status.HTTP_404_NOT_FOUND,
-        )
-
-    if request.method == "GET":
-        interactions_omnipath_serializer = InteractionsOmnipathSerializer(interaction)
-        return JsonResponse(interactions_omnipath_serializer.data)
-
-    elif request.method == "PUT":
-        interactions_data = JSONParser().parse(request)
-        interactions_omnipath_serializer = InteractionsOmnipathSerializer(
-            interaction, data=interactions_data
-        )
-        if interactions_omnipath_serializer.is_valid():
-            interactions_omnipath_serializer.save()
-            return JsonResponse(interactions_omnipath_serializer.data)
-        return JsonResponse(
-            interactions_omnipath_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-        )
-
-    elif request.method == "DELETE":
-        interaction.delete()
-        return JsonResponse(
-            {"message": "Country was deleted successfully!"},
-            status=status.HTTP_204_NO_CONTENT,
-        )
