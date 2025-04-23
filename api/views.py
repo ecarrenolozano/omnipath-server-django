@@ -9,6 +9,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
+from rest_framework.pagination import LimitOffsetPagination
+from django.contrib.postgres.fields import ArrayField
 
 from api.models import Interactions
 from api.serializers import InteractionsOmnipathSerializer
@@ -35,9 +37,21 @@ class InteractionListCreateView(APIView):
     View for retrieving and creating interactions. Supports filtering and field selection.
     """
 
+    pagination_class = LimitOffsetPagination
+
+    def paginate_queryset(self, queryset, request):
+        paginator = self.pagination_class()
+        return paginator.paginate_queryset(queryset, request, view=self)
+
     @swagger_auto_schema(
         operation_description="Retrieve a list of interactions. Supports fields selection",
         manual_parameters=[
+            openapi.Parameter(
+                "organisms",
+                openapi.IN_QUERY,
+                description="Filter interactions by ncbi_tad_id: 9606,10116,10090",
+                type=openapi.TYPE_STRING,
+            ),
             openapi.Parameter(
                 "dorothea_levels",
                 openapi.IN_QUERY,
@@ -67,28 +81,42 @@ class InteractionListCreateView(APIView):
 
         # Get selected fields from query parameters
         selected_fields = request.query_params.get("fields")
-        selected_fields = (
-            selected_fields.split(",")
-            if selected_fields
-            else DEFAULT_INTERACTIONS_FIELDS
-        )
+        if selected_fields:
+            selected_fields = DEFAULT_INTERACTIONS_FIELDS + selected_fields.split(",")
+        else:
+            DEFAULT_INTERACTIONS_FIELDS
 
         # Logic behind '?genesymbols'
         genesymbols_parameter = request.query_params.get("genesymbols")
-        if genesymbols_parameter.lower() in {"1", "true"}:
+        if (genesymbols_parameter is not None) and (
+            genesymbols_parameter in {"1", "true"}
+        ):
             selected_fields.extend(("source_genesymbol", "target_genesymbol"))
 
         # Logic behind '?dorothea_levels'
         dorothea_levels_parameter = request.query_params.get("dorothea_levels")
         if dorothea_levels_parameter:
+            print(dorothea_levels_parameter)
             queryset = queryset.filter(
-                dorothea_level__icontains=dorothea_levels_parameter
+                dorothea_level=dorothea_levels_parameter.split(",")
             )
-        print(dorothea_levels_parameter)
+
+        # Logic behind ?organisms
+        organisms_parameter = request.query_params.get("organisms")
+        if organisms_parameter:
+            print(organisms_parameter)
+            queryset = queryset.filter(
+                dorothea_level=dorothea_levels_parameter.split(",")
+            )
+
+        print(queryset)
+        print(selected_fields)
+
+        paginated_qs = self.paginate_queryset(queryset, request)
 
         # Serialize the queryset
         serializer = InteractionsOmnipathSerializer(
-            queryset, many=True, fields=selected_fields
+            paginated_qs, many=True, fields=selected_fields
         )
         return JsonResponse(serializer.data, safe=False)
 

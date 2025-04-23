@@ -101,7 +101,7 @@ DATABASES = {
     },
     "omnipath_data": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "omnipath_db_sandbox",
+        "NAME": "omnipath_db",
         "USER": "omnipathuser",
         "PASSWORD": "omnipath123",
         "HOST": "localhost",
@@ -152,3 +152,9 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ---- Additional settings for the Django REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 100,
+}

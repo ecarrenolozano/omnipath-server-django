@@ -46,4 +46,4 @@ class Interactions(models.Model):
         ordering = ("id",)
 
     def __str__(self):
-        return f"({self.source}, {self.target}, {self.id}, {self.source_genesymbol})"
+        return f"({self.source}, {self.target}, {self.id}, {self.source_genesymbol},{self.dorothea_level}),"
