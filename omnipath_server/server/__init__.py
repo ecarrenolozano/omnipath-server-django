@@ -19,6 +19,6 @@ Multiple service Sanic web server.
 
 from ._main import main_server
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    main_server.run(host = '0.0.0.0', port = 33333)
+    main_server.run(host="0.0.0.0", port=33333)

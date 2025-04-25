@@ -1,0 +1,6 @@
+{
+    "yaml.schemas": {
+        "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml",
+        "https://json.schemastore.org/pre-commit-config.json": "file:///home/ecarreno/SSC-Projects/b_REPOSITORIES/ecarrenolozano/omnipath-server-django/.pre-commit-config.yaml"
+    }
+}

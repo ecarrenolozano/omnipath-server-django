@@ -18,9 +18,9 @@ OmniPath HTTP server based on Twisted
 """
 
 __all__ = [
-    '__version__',
-    '__author__',
+    "__version__",
+    "__author__",
 ]
 
 from ._metadata import __author__, __version__
-from ._session import log, _log, session
+from ._session import _log, log, session

@@ -1,20 +1,11 @@
-import json
-
-from django.http import StreamingHttpResponse
 from django.http.response import JsonResponse
-from django.shortcuts import render
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework.parsers import JSONParser
 from rest_framework.pagination import LimitOffsetPagination
-from django.contrib.postgres.fields import ArrayField
+from rest_framework.views import APIView
 
 from api.models import Interactions
 from api.serializers import InteractionsOmnipathSerializer
-
 
 DEFAULT_INTERACTIONS_FIELDS = [
     "source",
@@ -88,26 +79,20 @@ class InteractionListCreateView(APIView):
 
         # Logic behind '?genesymbols'
         genesymbols_parameter = request.query_params.get("genesymbols")
-        if (genesymbols_parameter is not None) and (
-            genesymbols_parameter in {"1", "true"}
-        ):
+        if (genesymbols_parameter is not None) and (genesymbols_parameter in {"1", "true"}):
             selected_fields.extend(("source_genesymbol", "target_genesymbol"))
 
         # Logic behind '?dorothea_levels'
         dorothea_levels_parameter = request.query_params.get("dorothea_levels")
         if dorothea_levels_parameter:
             print(dorothea_levels_parameter)
-            queryset = queryset.filter(
-                dorothea_level=dorothea_levels_parameter.split(",")
-            )
+            queryset = queryset.filter(dorothea_level=dorothea_levels_parameter.split(","))
 
         # Logic behind ?organisms
         organisms_parameter = request.query_params.get("organisms")
         if organisms_parameter:
             print(organisms_parameter)
-            queryset = queryset.filter(
-                dorothea_level=dorothea_levels_parameter.split(",")
-            )
+            queryset = queryset.filter(dorothea_level=dorothea_levels_parameter.split(","))
 
         print(queryset)
         print(selected_fields)
@@ -115,9 +100,7 @@ class InteractionListCreateView(APIView):
         paginated_qs = self.paginate_queryset(queryset, request)
 
         # Serialize the queryset
-        serializer = InteractionsOmnipathSerializer(
-            paginated_qs, many=True, fields=selected_fields
-        )
+        serializer = InteractionsOmnipathSerializer(paginated_qs, many=True, fields=selected_fields)
         return JsonResponse(serializer.data, safe=False)
 
 

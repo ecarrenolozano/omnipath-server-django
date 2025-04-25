@@ -80,7 +80,7 @@ omnipath-server-django/
 ├── manage.py                # Django CLI tool
 ├── omnipath_server_django/  # Django project settings
 │   ├── asgi.py              # ASGI entry point
-│   ├── __init__.py          # init file│   
+│   ├── __init__.py          # init file│
 │   ├── settings.py          # project settings
 │   ├── urls.py              # root URL config
 │   └── wsgi.py              # WSGI entry point
@@ -101,7 +101,7 @@ omnipath-server-django/
   - Password: `omnipath_admin_123` (for the superuser `postgres`)
   - Host: 127.0.0.1 (localhost)
   - Port: 5432 (default for PostgreSQL)
-  
+
 ```python
 DATABASES = {
 	# ---------------------------
